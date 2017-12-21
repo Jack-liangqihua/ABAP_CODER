@@ -4,4 +4,4 @@ Goals determine what youre going to be.
 人生的奋斗目标决定你将成为什么样的人。
 
 
-
+目标，实践。
