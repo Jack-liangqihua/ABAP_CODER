@@ -21,8 +21,10 @@ Goals determine what youre going to be.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 更新远程信息到本地仓库步骤说明：
+
 1、git remote -v                      查看远程分支
 2、git fetch ABAP_CODER master:temp   从远程获取最新版本到本地
 3、git diff temp                      比较本地仓库与下载的temp分支
 4、git merge temp                     合并temp分支到本地的master分支
 5、git branch -d temp                 删除temp分支
+
