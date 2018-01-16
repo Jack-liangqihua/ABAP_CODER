@@ -11,6 +11,7 @@ Goals determine what youre going to be.
 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 更新本地信息到远程仓库步骤说明：
 
 1、git add '文件名称'
@@ -18,6 +19,7 @@ Goals determine what youre going to be.
 3、git push  ABAP_CODER master . 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 更新远程信息到本地仓库步骤说明：
 1、git remote -v                      查看远程分支
 2、git fetch ABAP_CODER master:temp   从远程获取最新版本到本地
