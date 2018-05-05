@@ -35,35 +35,6 @@ Goals determine what youre going to be.
 5、git branch -d temp                 删除temp分支
 
 
-<table>
-  <tr>
-    <th>Tables</th>
-    <th>Are</th>
-    <th>Cool</th>
-  </tr>
-  <tr>
-    <td>col 1 is</td>
-    <td>left-aligned</td>
-    <td>$1600</td>
-  </tr>
-  <tr>
-    <td>col 2 is</td>
-    <td>centered</td>
-    <td>$12</td>
-  </tr>
-  <tr>
-    <td>col 3 is</td>
-    <td>right-aligned</td>
-    <td>$1</td>
-  </tr>
-</table>
-
-作者：cxuan
-链接：https://www.jianshu.com/p/7a655e5345b2
-來源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
-
 ## 目录结构
-* **[数据下载.docx](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/doc/%E6%95%B0%E6%8D%AE%E4%B8%8B%E8%BD%BD.docx)**
+* **[数据下载.docx](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/doc/%E6%95%B0%E6%8D%AE%E4%B8%8B%E8%BD%BD.md)**
 从SAP下载数据并存储到本地文件中
