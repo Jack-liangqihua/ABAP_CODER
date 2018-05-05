@@ -9,6 +9,20 @@ Goals determine what youre going to be.
 
 
 
+
+### 流程图
+```flow
+st=>start: git add '文件名称'
+e=>end
+op=>operation: git commit -m '更新说明'
+cond=>condition: git push  ABAP_CODER master
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 更新本地信息到远程仓库步骤说明：
