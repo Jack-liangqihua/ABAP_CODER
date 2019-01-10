@@ -14,3 +14,5 @@
 *    1.标准表只能指定为NON-UNIQUE,可以不指定，不指定默认就是NON-UNIQUE。
 *    2.排序表可以为UNIQUE,也可以为NON-UNIQUE.
 *    3.哈希表只能是UNIQUE,其必须指定UNIQUE关键字，如果允许相同的关键字记录，则hash值就相同，所以只能是UNIQUE，不允许重复的关键字存在。
+
+
