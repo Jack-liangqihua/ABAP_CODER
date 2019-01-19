@@ -1,0 +1,7 @@
+ AUTHORITY-CHECK OBJECT 'M_MATE_WRK'
+                     ID 'ACTVT' FIELD '03'
+                     ID 'WERKS' FIELD g_s_organ-werks.
+
+      IF NOT sy-subrc IS INITIAL. 
+        
+      ENDIF.

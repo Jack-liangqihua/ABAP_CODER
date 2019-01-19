@@ -1,0 +1,8 @@
+MD_STOCK_REQUIREMENTS_LIST_API
+
+
+使用function：MD_STOCK_REQUIREMENTS_LIST_API。输入物料号工厂号，他下面所有的表头和行项目信息全部都会取出来。你只需要把function返回给你的信息组织一下，选取一部分放到报表就可以了。
+        选择屏幕输入：
+        物料号 单值
+        工厂        单值  
+        MRP area 	 单值  

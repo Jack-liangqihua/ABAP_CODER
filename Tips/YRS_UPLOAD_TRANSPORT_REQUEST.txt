@@ -1,0 +1,380 @@
+*======================================================================*
+* Initial idea and first release by Igor Yaskevitch (IBS), 2003        *
+* Enhancements by Sergei Korolev, 2005 (added import queue             *
+* manipulations, authority checking, minor interface improvements)     *
+*----------------------------------------------------------------------*
+* Function : This is a utility tool for uploading binary               *
+* files of a transport request from a Client PC,                       *
+* adding to an import queue and importing into the                     *
+* system.                                                              *
+*======================================================================*
+REPORT YRS_UPLOAD_TRANSPORT_REQUEST.
+TYPE-POOLS: ABAP, SABC, STMS.
+CONSTANTS: GC_TP_FILLCLIENT LIKE STPA-COMMAND VALUE 'FILLCLIENT'.
+DATA:
+  LT_REQUEST TYPE STMS_TR_REQUESTS,
+  LT_TP_MAINTAIN TYPE STMS_TP_MAINTAINS.
+
+DATA:
+  SL TYPE I,
+  L_DATAFILE(255) TYPE C,
+  DATAFILES TYPE I,
+  RET TYPE I,
+  ANS TYPE C.
+DATA:
+  ET_REQUEST_INFOS TYPE STMS_WBO_REQUESTS,
+  REQUEST_INFO TYPE STMS_WBO_REQUEST,
+  SYSTEM TYPE TMSCSYS-SYSNAM,
+  REQUEST LIKE E070-TRKORR.
+DATA:
+  FOLDER TYPE STRING,
+  RETVAL LIKE TABLE OF DDSHRETVAL WITH HEADER LINE,
+  FLDVALUE LIKE HELP_INFO-FLDVALUE,
+  TRANSDIR TYPE TEXT255,
+  FILENAME LIKE AUTHB-FILENAME,
+  TRFILE(20) TYPE C.
+DATA:
+  BEGIN OF DATATAB OCCURS 0,
+    BUF(8192) TYPE X,
+  END OF DATATAB.
+DATA: LEN TYPE I,
+      FLEN TYPE I.
+SELECTION-SCREEN COMMENT /1(79) COMM_SEL.
+PARAMETERS:
+P_COFILE(255) TYPE C LOWER CASE OBLIGATORY.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN BEGIN OF BLOCK B01 WITH FRAME TITLE BL_TITLE.
+PARAMETERS:
+  P_ADDQUE AS CHECKBOX DEFAULT 'X',
+  P_TARCLI LIKE TMSBUFFER-TARCLI
+           DEFAULT SY-MANDT
+           MATCHCODE OBJECT H_T000,
+   P_SEPR OBLIGATORY.
+SELECTION-SCREEN END OF BLOCK B01.
+INITIALIZATION.
+  BL_TITLE = '导入队列参数'(B01).
+  COMM_SEL = '请选择co-file. 文件名必须以字母''K''开始.'(001).
+  IF SY-OPSYS = 'Windows NT'.
+    P_SEPR = '\'.
+  ELSE.
+    P_SEPR = '/'.
+  ENDIF.
+**  CALL FUNCTION 'WSAF_BUILD_SEPARATOR'
+**    IMPORTING
+**      separator                  = p_sepr
+**    EXCEPTIONS
+**      separator_not_maintained   = 1
+**      wrong_call                 = 2
+**      wsaf_config_not_maintained = 3
+**      OTHERS                     = 4.
+*  IF sy-subrc NE 0.
+*    MESSAGE s001(00) WITH 'Unable to find out the separator symbol
+*for the system.'(008).
+*  ENDIF.
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR P_COFILE.
+  DATA:
+    FILE TYPE FILE_TABLE,
+    RC TYPE I,
+    TITLE TYPE STRING,
+    FILE_TABLE TYPE FILETABLE,
+    FILE_FILTER TYPE STRING VALUE 'CO-files (K*.*)|K*.*||'.
+  TITLE = 'Select CO-file'(006).
+  CALL METHOD CL_GUI_FRONTEND_SERVICES=>FILE_OPEN_DIALOG
+    EXPORTING
+      WINDOW_TITLE            = TITLE
+      FILE_FILTER             = FILE_FILTER
+    CHANGING
+      FILE_TABLE              = FILE_TABLE
+      RC                      = RC
+    EXCEPTIONS
+      FILE_OPEN_DIALOG_FAILED = 1
+      CNTL_ERROR              = 2
+      ERROR_NO_GUI            = 3
+      NOT_SUPPORTED_BY_GUI    = 4
+      OTHERS                  = 5.
+  IF SY-SUBRC <> 0.
+    MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+    WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+  ENDIF.
+  READ TABLE FILE_TABLE INTO FILE INDEX 1.
+  P_COFILE = FILE.
+AT SELECTION-SCREEN.
+  DATA:
+  FILE TYPE STRING.
+  SL = STRLEN( P_COFILE ).
+  IF SL < 11.
+    MESSAGE E001(00)
+    WITH 'Invalid co-file name format.'.
+  ENDIF.
+  SL = SL - 11.
+  IF P_COFILE+SL(1) NE 'K'.
+    MESSAGE E001(00)
+    WITH 'Invalid co-file name format.'.
+  ENDIF.
+  SL = SL + 1.
+  IF NOT P_COFILE+SL(6) CO '0123456789'.
+    MESSAGE E001(00)
+    WITH 'Invalid co-file name format.'.
+  ENDIF.
+  SL = SL + 6.
+  IF P_COFILE+SL(1) NE '.'.
+    MESSAGE E001(00)
+   WITH 'Invalid co-file name format.'.
+  ENDIF.
+  SL = SL - 7.
+  CLEAR DATAFILES.
+  L_DATAFILE = P_COFILE.
+  L_DATAFILE+SL(1) = 'R'.
+  FILE = L_DATAFILE.
+  IF CL_GUI_FRONTEND_SERVICES=>FILE_EXIST( FILE = FILE ) = 'X'.
+    ADD 1 TO DATAFILES.
+  ENDIF.
+  L_DATAFILE+SL(1) = 'D'.
+  FILE = L_DATAFILE.
+  IF CL_GUI_FRONTEND_SERVICES=>FILE_EXIST( FILE = FILE ) = 'X'.
+    ADD 1 TO DATAFILES.
+  ENDIF.
+  SL = SL + 8.
+  REQUEST = P_COFILE+SL(3).
+  SL = SL - 8.
+  CONCATENATE REQUEST P_COFILE+SL(7) INTO REQUEST.
+  TRANSLATE REQUEST TO UPPER CASE.
+  IF DATAFILES = 0.
+    MESSAGE E398(00)
+    WITH 'Corresponding data-files of transport request'(010)
+    REQUEST
+    'not found.'(011).
+  ELSE.
+    MESSAGE S398(00)
+    WITH DATAFILES
+    'data-files have been found for transport request'(012)
+    REQUEST.
+  ENDIF.
+START-OF-SELECTION.
+  DATA:
+  PARAMETER TYPE SPAR,
+  PARAMETERS TYPE TABLE OF SPAR.
+  CALL FUNCTION 'RSPO_R_SAPGPARAM'
+    EXPORTING
+      NAME   = 'DIR_TRANS'
+    IMPORTING
+      VALUE  = TRANSDIR
+    EXCEPTIONS
+      ERROR  = 1
+      THERS = 2.
+  IF SY-SUBRC <> 0.
+    MESSAGE ID SY-MSGID TYPE 'E' NUMBER SY-MSGNO
+    WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+  ENDIF.
+  FILENAME = P_COFILE+SL(11).
+  TRANSLATE FILENAME TO UPPER CASE.
+  CONCATENATE TRANSDIR 'cofiles' FILENAME
+  INTO FILENAME
+  SEPARATED BY P_SEPR.
+  OPEN DATASET FILENAME FOR INPUT IN BINARY MODE.
+  RET = SY-SUBRC.
+  CLOSE DATASET FILENAME.
+  IF NOT RET = 0.
+    CALL FUNCTION 'POPUP_TO_CONFIRM'
+      EXPORTING
+        TEXT_QUESTION  = 'Copy all files?'(A03)
+      IMPORTING
+        ANSWER         = ANS
+      EXCEPTIONS
+        TEXT_NOT_FOUND = 1
+        OTHERS         = 2.
+  ELSE.
+    PARAMETER-PARAM = 'FILE'.
+    PARAMETER-VALUE = FILENAME.
+    APPEND PARAMETER TO PARAMETERS.
+    CALL FUNCTION 'POPUP_TO_CONFIRM'
+      EXPORTING
+        TEXT_QUESTION  = 'File ''&FILE&'' already exists. Rewrite?'(A04)
+      IMPORTING
+        ANSWER         = ANS
+      TABLES
+        PARAMETER      = PARAMETERS
+      EXCEPTIONS
+        TEXT_NOT_FOUND = 1
+        OTHERS         = 2.
+  ENDIF.
+  CHECK ANS = '1'.
+  TRFILE = P_COFILE+SL(11).
+  TRANSLATE TRFILE TO UPPER CASE.
+  PERFORM COPY_FILE USING 'cofiles' TRFILE P_COFILE.
+  TRFILE(1) = 'R'.
+  L_DATAFILE+SL(1) = 'R'.
+  PERFORM COPY_FILE USING 'data' TRFILE L_DATAFILE.
+  IF DATAFILES > 1.
+    TRFILE(1) = 'D'.
+    L_DATAFILE+SL(1) = 'D'.
+    PERFORM COPY_FILE USING 'data' TRFILE L_DATAFILE.
+  ENDIF.
+  IF P_ADDQUE = 'X'.
+    SYSTEM = SY-SYSID.
+    DO 1 TIMES.
+* Check authority to add request to the import queue
+      CALL FUNCTION 'TR_AUTHORITY_CHECK_ADMIN'
+        EXPORTING
+          IV_ADMINFUNCTION = 'TADD'
+        EXCEPTIONS
+          E_NO_AUTHORITY   = 1
+          E_INVALID_USER   = 2
+          OTHERS           = 3.
+      IF SY-SUBRC <> 0.
+        MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+        WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+        EXIT.
+      ENDIF.
+      CALL FUNCTION 'TMS_UI_APPEND_TR_REQUEST'
+        EXPORTING
+          IV_SYSTEM             = SYSTEM
+          IV_REQUEST            = REQUEST
+          IV_EXPERT_MODE        = 'X'
+          IV_CTC_ACTIVE         = 'X'
+        EXCEPTIONS
+          CANCELLED_BY_USER     = 1
+          APPEND_REQUEST_FAILED = 2
+          OTHERS                = 3.
+      CHECK SY-SUBRC = 0.
+      CALL FUNCTION 'TMS_MGR_READ_TRANSPORT_REQUEST'
+        EXPORTING
+          IV_REQUEST                 = REQUEST
+          IV_TARGET_SYSTEM           = SYSTEM
+        IMPORTING
+          ET_REQUEST_INFOS           = ET_REQUEST_INFOS
+        EXCEPTIONS
+          READ_CONFIG_FAILED         = 1
+          TABLE_OF_REQUESTS_IS_EMPTY = 2
+          SYSTEM_NOT_AVAILABLE       = 3
+          OTHERS                     = 4.
+      CLEAR REQUEST_INFO.
+      READ TABLE ET_REQUEST_INFOS INTO REQUEST_INFO INDEX 1.
+      IF REQUEST_INFO-E070-KORRDEV = 'CUST'
+      AND NOT P_TARCLI IS INITIAL.
+        CALL FUNCTION 'TMS_MGR_MAINTAIN_TR_QUEUE'
+          EXPORTING
+            IV_COMMAND                 = GC_TP_FILLCLIENT
+            IV_SYSTEM                  = SYSTEM
+            IV_REQUEST                 = REQUEST
+            IV_TARCLI                  = P_TARCLI
+            IV_MONITOR                 = 'X'
+            IV_VERBOSE                 = 'X'
+          IMPORTING
+            ET_TP_MAINTAINS            = LT_TP_MAINTAIN
+          EXCEPTIONS
+            READ_CONFIG_FAILED         = 1
+            TABLE_OF_REQUESTS_IS_EMPTY = 2
+            OTHERS                     = 3.
+        IF SY-SUBRC <> 0.
+          MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+          WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+          EXIT.
+        ENDIF.
+      ENDIF.
+* Check authority to start request import
+      CALL FUNCTION 'TR_AUTHORITY_CHECK_ADMIN'
+        EXPORTING
+          IV_ADMINFUNCTION = 'IMPS'
+        EXCEPTIONS
+          E_NO_AUTHORITY   = 1
+          E_INVALID_USER   = 2
+          OTHERS           = 3.
+      IF SY-SUBRC <> 0.
+        MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+        WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+        EXIT.
+      ENDIF.
+      CALL FUNCTION 'TMS_UI_IMPORT_TR_REQUEST'
+        EXPORTING
+          IV_SYSTEM             = SYSTEM
+          IV_REQUEST            = REQUEST
+          IV_TARCLI             = P_TARCLI
+          IV_SOME_ACTIVE        = SPACE
+        EXCEPTIONS
+          CANCELLED_BY_USER     = 1
+          IMPORT_REQUEST_DENIED = 2
+          IMPORT_REQUEST_FAILED = 3
+          OTHERS                = 4.
+    ENDDO.
+  ENDIF.
+*&--------------------------------------------------------------------*
+*& FORM copy_file
+*&--------------------------------------------------------------------*
+* text
+*---------------------------------------------------------------------*
+* -->SUBDIR text
+* -->FNAME text
+* -->SOURCE_FILEtext
+*---------------------------------------------------------------------*
+FORM COPY_FILE USING SUBDIR FNAME SOURCE_FILE.
+  DATA: L_FILENAME TYPE STRING.
+  L_FILENAME = SOURCE_FILE.
+  CONCATENATE TRANSDIR SUBDIR FNAME
+  INTO FILENAME
+  SEPARATED BY P_SEPR.
+  REFRESH DATATAB.
+  CLEAR FLEN.
+  CALL METHOD CL_GUI_FRONTEND_SERVICES=>GUI_UPLOAD
+    EXPORTING
+      FILENAME                = L_FILENAME
+      FILETYPE                = 'BIN'
+    IMPORTING
+      FILELENGTH              = FLEN
+    CHANGING
+      DATA_TAB                = DATATAB[]
+    EXCEPTIONS
+      FILE_OPEN_ERROR         = 1
+      FILE_READ_ERROR         = 2
+      NO_BATCH                = 3
+      GUI_REFUSE_FILETRANSFER = 4
+      INVALID_TYPE            = 5
+      NO_AUTHORITY            = 6
+      UNKNOWN_ERROR           = 7
+      BAD_DATA_FORMAT         = 8
+      HEADER_NOT_ALLOWED      = 9
+      SEPARATOR_NOT_ALLOWED   = 10
+      HEADER_TOO_LONG         = 11
+      UNKNOWN_DP_ERROR        = 12
+      ACCESS_DENIED           = 13
+      DP_OUT_OF_MEMORY        = 14
+      DISK_FULL               = 15
+      DP_TIMEOUT              = 16
+      NOT_SUPPORTED_BY_GUI    = 17
+      ERROR_NO_GUI            = 18
+      OTHERS                  = 19.
+  IF SY-SUBRC NE 0.
+    WRITE: / 'Error uploading file'(003), L_FILENAME.
+    EXIT.
+  ENDIF.
+  CALL FUNCTION 'AUTHORITY_CHECK_DATASET'
+    EXPORTING
+      ACTIVITY         = SABC_ACT_WRITE
+      FILENAME         = FILENAME
+    EXCEPTIONS
+      NO_AUTHORITY     = 1
+      ACTIVITY_UNKNOWN = 2
+      OTHERS           = 3.
+  IF SY-SUBRC <> 0.
+    FORMAT COLOR COL_NEGATIVE.
+    WRITE: / 'Write access denied. File'(013), FILENAME.
+    FORMAT COLOR OFF.
+    EXIT.
+  ENDIF.
+  OPEN DATASET FILENAME FOR OUTPUT IN BINARY MODE.
+  IF SY-SUBRC NE 0.
+    WRITE: / 'File open error'(004), TRFILE.
+    EXIT.
+  ENDIF.
+  LOOP AT DATATAB.
+    IF FLEN <= 8192.
+      LEN = FLEN.
+    ELSE.
+      LEN = 8192.
+    ENDIF.
+    TRANSFER DATATAB-BUF TO FILENAME LENGTH LEN.
+    FLEN = FLEN - LEN.
+  ENDLOOP.
+  CLOSE DATASET FILENAME.
+  WRITE: / 'File'(005), TRFILE, 'uploaded'(007).
+ENDFORM."copy_file

@@ -1,0 +1,46 @@
+SELECT-OPTIONS: sdispo FOR t024d-dispo. "MRP控制者
+SELECT-OPTIONS: sauskt FOR t458a-auskt.  "MRP异常信息
+
+
+
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR sauskt-low.
+  PERFORM frm_show_auskt.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR sauskt-high.
+  PERFORM frm_show_auskt.
+  
+  
+  
+FORM frm_show_auskt .
+*  call function 'MD_SHOW_AUSNAHMEGRUPPEN'.
+  PERFORM frm_get_msg.
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+    EXPORTING
+      retfield         = 'AUSKT'
+      dynpprog         = sy-repid
+      dynpnr           = sy-dynnr
+      dynprofield      = 'SAUSKT'
+      value_org        = 'S'
+      callback_program = sy-repid
+    TABLES
+      value_tab        = gt_msg.
+ENDFORM.
+
+
+
+
+FORM frm_get_msg.
+  CHECK gt_msg[] IS  INITIAL.
+  SELECT
+    a~auskt
+    b~auslt
+  INTO CORRESPONDING FIELDS OF TABLE gt_msg
+  FROM t458a AS a INNER JOIN t458b AS b
+    ON a~aussl = b~aussl
+  WHERE b~spras = sy-langu
+  AND a~selgp >= 1 AND a~selgp <= 9.
+
+  SORT gt_msg BY auskt.
+ENDFORM.

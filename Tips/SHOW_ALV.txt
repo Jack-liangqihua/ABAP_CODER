@@ -1,0 +1,45 @@
+FORM SHOW_ALV .
+
+  DATA: LT_ALV_FILED    TYPE LVC_S_FCAT,
+        LT_ALV_FILEDCAT TYPE LVC_T_FCAT,
+        LT_LAYOUT       TYPE LVC_S_LAYO,
+        LV_PGM          TYPE SY-REPID,
+        LS_SORT         TYPE LVC_S_SORT,
+        LT_SORT         TYPE TABLE OF LVC_S_SORT..
+
+  CLEAR LT_ALV_FILEDCAT.
+  LV_PGM = SY-REPID.
+
+  DEFINE M_FIELDCAT.
+    lt_alv_filed-fieldname = &1.
+    lt_alv_filed-REF_TABLE = &2.
+    lt_alv_filed-REF_FIELD = &3.
+    lt_alv_filed-coltext   = &4.
+    append lt_alv_filed to lt_alv_filedcat.
+  END-OF-DEFINITION.
+
+
+
+  M_FIELDCAT 'PO_VBELN'     '' ''  TEXT-Z01. 
+  M_FIELDCAT 'SO_VBELN'     '' ''  TEXT-Z02. 
+  M_FIELDCAT 'KUNNR1'       '' ''  TEXT-Z03.
+  M_FIELDCAT 'NAME1'        '' ''  TEXT-Z04.
+  M_FIELDCAT 'KUNNR2'       '' ''  TEXT-Z05.
+  M_FIELDCAT 'NAME2'        '' ''  TEXT-Z06.
+  M_FIELDCAT 'WADAT'        '' ''  TEXT-Z07.
+
+
+  LT_LAYOUT-CWIDTH_OPT = 'X'.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY_LVC'
+    EXPORTING
+      IT_FIELDCAT_LVC    = LT_ALV_FILEDCAT
+      IS_LAYOUT_LVC      = LT_LAYOUT
+      I_SAVE             = 'A'
+      I_CALLBACK_PROGRAM = LV_PGM
+    TABLES
+      T_OUTTAB           = GT_ALVDATA[].
+
+
+
+ENDFORM.
