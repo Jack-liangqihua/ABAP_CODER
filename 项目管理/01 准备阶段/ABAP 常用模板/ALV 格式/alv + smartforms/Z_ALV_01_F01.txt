@@ -1,0 +1,387 @@
+*&---------------------------------------------------------------------*
+*&  包含                Z_ALV_01_F01
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CHECK_AUTH
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_CHECK_AUTH .
+
+ENDFORM.                    " FRM_CHECK_AUTH
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_GET_DATA .
+
+  SELECT
+      VBAK~VBELN
+      VBAP~POSNR
+      VBAK~AUART
+      VBAK~VKORG
+      VBAK~VTWEG
+      VBAK~SPART
+      VBAK~VKGRP
+      VBAK~VKBUR
+      VBAK~VDATU
+      VBAK~KUNNR"售达方
+      VBAP~MATNR
+      VBAP~MEINS
+      VBAP~NETWR
+      VBAP~KWMENG
+      VBAP~BRGEW
+      VBAP~NTGEW
+      VBAP~GEWEI
+      VBAP~WERKS
+  INTO  CORRESPONDING FIELDS OF TABLE GT_DATA
+  FROM  VBAK INNER JOIN VBAP ON VBAK~VBELN = VBAP~VBELN
+  WHERE VBAK~VKORG IN   P_VKORG .
+
+
+
+
+ENDFORM.                    " FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SET_FCAT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_SET_FCAT .
+
+  DATA :LV_IDX TYPE I VALUE 0.
+  DEFINE  %FCAT.
+    LV_IDX = LV_IDX + 1.
+    CLEAR GS_FCAT.
+    GS_FCAT-COL_POS   = LV_IDX.
+    GS_FCAT-FIELDNAME = &1.
+    GS_FCAT-SELTEXT_L = &2.
+    GS_FCAT-SELTEXT_M = &2.
+    GS_FCAT-SELTEXT_S = &3.
+    APPEND GS_FCAT TO GT_FCAT.
+
+  END-OF-DEFINITION.
+
+
+
+
+  %FCAT 'VBELN' '订单' '销售订单'.
+  %FCAT 'POSNR' '行号' '销售订单行号'.
+  %FCAT 'AUART' '类型' '销售凭证类型'.
+  %FCAT 'VKORG' '组织' '销售组织'.
+  %FCAT 'VTEXT' '组织' '销售组织'.
+  %FCAT 'VTWEG' '渠道' '分销渠道'.
+  %FCAT 'SPART' '产品组' '产品组'.
+  %FCAT 'VKGRP' '销售组' '销售组'.
+  %FCAT 'VKBUR' '销售部门' '销售部门'.
+  %FCAT 'VDATU' '请求交货日期' '请求交货日期'.
+  %FCAT 'KUNNR' '售达方' '售达方'.
+  %FCAT 'MATNR' '物料号' '物料号'.
+  %FCAT 'MAKTX' '物料' '物料描述'.
+  %FCAT 'MEINS' '基本计量单位' '基本计量单位'.
+  %FCAT 'NETWR' '订单项目的凭证货币净值' '订单项目的凭证货币净值'.
+  %FCAT 'KWMENG' '以销售单位表示的累计订单数量' '以销售单位表示的累计订单数量'.
+  %FCAT 'BRGEW' '项目的毛重' '项目的毛重'.
+  %FCAT 'NTGEW' '项目净重' '项目净重'.
+  %FCAT 'GEWEI' '重量单位' '重量单位'.
+  %FCAT 'WERKS' '工厂' '工厂'.
+
+ENDFORM.                    " FRM_SET_FCAT
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SET_LAYOUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_SET_LAYOUT .
+  GS_LAYOUT-ZEBRA =  'X'.
+  GS_LAYOUT-BOX_FIELDNAME = 'CB'.
+ENDFORM.                    " FRM_SET_LAYOUT
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SHOW_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_SHOW_DATA .
+
+
+
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+   EXPORTING
+*     I_INTERFACE_CHECK                 = ' '
+*     I_BYPASSING_BUFFER                = ' '
+*     I_BUFFER_ACTIVE                   = ' '
+     I_CALLBACK_PROGRAM                = SY-REPID
+     I_CALLBACK_PF_STATUS_SET          = 'FRM_SET_PF_STATUS'
+     I_CALLBACK_USER_COMMAND           = 'FRM_USER_COMMAND'
+*     I_CALLBACK_TOP_OF_PAGE            = ' '
+*     I_CALLBACK_HTML_TOP_OF_PAGE       = ' '
+*     I_CALLBACK_HTML_END_OF_LIST       = ' '
+*     I_STRUCTURE_NAME                  =
+*     I_BACKGROUND_ID                   = ' '
+*     I_GRID_TITLE                      =
+*     I_GRID_SETTINGS                   =
+     IS_LAYOUT                         = GS_LAYOUT
+     IT_FIELDCAT                       = GT_FCAT[]
+*     IT_EXCLUDING                      =
+*     IT_SPECIAL_GROUPS                 =
+*     IT_SORT                           =
+*     IT_FILTER                         =
+*     IS_SEL_HIDE                       =
+*     I_DEFAULT                         = 'X'
+*     I_SAVE                            = ' '
+*     IS_VARIANT                        =
+*     IT_EVENTS                         =
+*     IT_EVENT_EXIT                     =
+*     IS_PRINT                          =
+*     IS_REPREP_ID                      =
+*     I_SCREEN_START_COLUMN             = 0
+*     I_SCREEN_START_LINE               = 0
+*     I_SCREEN_END_COLUMN               = 0
+*     I_SCREEN_END_LINE                 = 0
+*     I_HTML_HEIGHT_TOP                 = 0
+*     I_HTML_HEIGHT_END                 = 0
+*     IT_ALV_GRAPHICS                   =
+*     IT_HYPERLINK                      =
+*     IT_ADD_FIELDCAT                   =
+*     IT_EXCEPT_QINFO                   =
+*     IR_SALV_FULLSCREEN_ADAPTER        =
+*   IMPORTING
+*     E_EXIT_CAUSED_BY_CALLER           =
+*     ES_EXIT_CAUSED_BY_USER            =
+    TABLES
+      T_OUTTAB                          = GT_DATA[]
+*   EXCEPTIONS
+*     PROGRAM_ERROR                     = 1
+*     OTHERS                            = 2
+            .
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    MESSAGE E001(00) WITH 'ALV 展示错误'.
+  ENDIF.
+
+
+ENDFORM.                    " FRM_SHOW_DATA
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SET_PF_STATUS
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_SET_PF_STATUS  USING RT_EXTAB TYPE SLIS_T_EXTAB.
+
+  SET PF-STATUS 'USER_STATUS' EXCLUDING RT_EXTAB.
+
+
+ENDFORM.                    " FRM_SET_PF_STATUS
+*&---------------------------------------------------------------------*
+*&      Form  FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_USER_COMMAND USING R_UCOMM LIKE SY-UCOMM
+                             RS_SELFIELD TYPE SLIS_SELFIELD.
+
+  CASE R_UCOMM.
+    WHEN 'BACK'.
+      LEAVE TO LIST-PROCESSING.
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+    WHEN 'CANCLE'.
+      LEAVE PROGRAM.
+    WHEN 'USR_PRINT'.
+
+      CALL FUNCTION 'SSF_FUNCTION_MODULE_NAME'
+        EXPORTING
+          FORMNAME           = 'Z_ALV_01_SM'
+*         VARIANT            = ' '
+*         DIRECT_CALL        = ' '
+        IMPORTING
+          FM_NAME            = GV_SSF_NAME
+        EXCEPTIONS
+          NO_FORM            = 1
+          NO_FUNCTION_MODULE = 2
+          OTHERS             = 3.
+      IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+      ENDIF.
+
+
+
+
+
+      LOOP AT GT_DATA INTO GS_DATA WHERE CB EQ 'X'.
+        PERFORM FRM_PRINT USING GS_DATA-VBELN.
+      ENDLOOP.
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+
+
+
+ENDFORM.                    " FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_TXT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_GET_TXT .
+
+  CLEAR :GT_DATA_TEMP[],GT_DATA_TEMP.
+  MOVE GT_DATA TO GT_DATA_TEMP.
+  SORT GT_DATA_TEMP BY MATNR.
+  DELETE ADJACENT DUPLICATES FROM GT_DATA_TEMP COMPARING MATNR.
+
+
+  SELECT
+    MATNR
+    MAKTX
+    INTO CORRESPONDING FIELDS OF TABLE GT_MATNR
+    FROM MAKT
+    FOR ALL ENTRIES IN GT_DATA_TEMP
+    WHERE MAKT~MATNR = GT_DATA_TEMP-MATNR
+    AND MAKT~SPRAS =  SY-LANGU.
+
+
+  CLEAR :GT_DATA_TEMP[],GT_DATA_TEMP.
+  MOVE GT_DATA TO GT_DATA_TEMP.
+  SORT GT_DATA_TEMP BY VKORG.
+  DELETE ADJACENT DUPLICATES FROM GT_DATA_TEMP COMPARING VKORG.
+
+  SELECT
+    VKORG
+    VTEXT
+  INTO CORRESPONDING FIELDS OF TABLE GT_TVKOT
+  FROM TVKOT
+  FOR ALL ENTRIES IN GT_DATA_TEMP
+  WHERE VKORG = GT_DATA_TEMP-VKORG
+    AND SPRAS = SY-LANGU.
+
+
+
+
+  LOOP AT GT_DATA ASSIGNING <FS>.
+
+    CALL FUNCTION 'CONVERSION_EXIT_CUNIT_OUTPUT'
+      EXPORTING
+        INPUT          = <FS>-MEINS
+        LANGUAGE       = SY-LANGU
+      IMPORTING
+*       LONG_TEXT      =
+        OUTPUT         = <FS>-MEINS
+*       SHORT_TEXT     =
+      EXCEPTIONS
+        UNIT_NOT_FOUND = 1
+        OTHERS         = 2.
+    IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+
+
+
+    CLEAR :GS_MATNR.
+    READ TABLE GT_MATNR INTO GS_MATNR WITH TABLE KEY MATNR = <FS>-MATNR.
+    IF SY-SUBRC EQ 0.
+      <FS>-MAKTX = GS_MATNR-MAKTX.
+    ENDIF.
+
+
+    CLEAR :GS_TVKOT.
+    READ TABLE GT_TVKOT INTO GS_TVKOT WITH TABLE KEY VKORG = <FS>-VKORG.
+    IF SY-SUBRC EQ 0 .
+      <FS>-VTEXT = GS_TVKOT-VTEXT.
+    ENDIF.
+
+
+
+  ENDLOOP.
+
+
+
+ENDFORM.                    " FRM_GET_TXT
+*&---------------------------------------------------------------------*
+*&      Form  FRM_PRINT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_VBELN  text
+*----------------------------------------------------------------------*
+FORM FRM_PRINT  USING    P_VBELN TYPE VBELN_VA.
+
+
+
+  SELECT SINGLE *
+    INTO CORRESPONDING FIELDS OF  GS_HEADER
+  FROM VBAK
+  WHERE VBELN = P_VBELN.
+
+
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE GT_ITEM
+  FROM VBAP
+  WHERE VBELN = P_VBELN.
+
+
+
+
+  CALL FUNCTION  GV_SSF_NAME
+    EXPORTING
+*            ARCHIVE_INDEX              =
+*            ARCHIVE_INDEX_TAB          =
+*            ARCHIVE_PARAMETERS         =
+*            CONTROL_PARAMETERS         =
+*            MAIL_APPL_OBJ              =
+*            MAIL_RECIPIENT             =
+*            MAIL_SENDER                =
+*            OUTPUT_OPTIONS             =
+*            USER_SETTINGS              = 'X'
+      GS_HEADER                  = GS_HEADER
+*          IMPORTING
+*            DOCUMENT_OUTPUT_INFO       =
+*            JOB_OUTPUT_INFO            =
+*            JOB_OUTPUT_OPTIONS         =
+    TABLES
+      GT_ITEM                    = GT_ITEM[]
+   EXCEPTIONS
+     FORMATTING_ERROR           = 1
+     INTERNAL_ERROR             = 2
+     SEND_ERROR                 = 3
+     USER_CANCELED              = 4
+     OTHERS                     = 5
+            .
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    MESSAGE E001(00) WITH '打印出现错误！'.
+  ENDIF.
+
+  CLEAR:GS_DATA,GS_HEADER,GT_ITEM,GT_ITEM[].
+
+
+ENDFORM.                    " FRM_PRINT
