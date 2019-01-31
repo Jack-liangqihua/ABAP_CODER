@@ -1,0 +1,15 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:ZapiSdCustomerMaintain>
+         <Ktokd>Z001</Ktokd>
+         <Kunnr>510003</Kunnr>
+         <Land1>CN</Land1>
+         <Lzone>0000000001</Lzone>
+         <Name1>梁其华接口测试23E</Name1>
+         <Ort01>佛山</Ort01>
+         <Spras>1</Spras>
+         <Stras>fos rg</Stras>
+      </urn:ZapiSdCustomerMaintain>
+   </soapenv:Body>
+</soapenv:Envelope>
