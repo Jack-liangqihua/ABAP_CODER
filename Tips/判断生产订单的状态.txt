@@ -1,0 +1,29 @@
+判断生产订单的状态
+
+
+  DATA: v_stat LIKE tj02t-txt04,
+        BEGIN OF wa_stat,
+          stat LIKE jest-stat,
+        END OF wa_stat,
+        it_stat LIKE TABLE OF wa_stat.
+
+  SELECT jest~stat INTO CORRESPONDING FIELDS OF TABLE it_stat
+    FROM jest
+    INNER JOIN aufk ON aufk~objnr = jest~objnr
+      AND aufk~aufnr = pi_aufnr
+    WHERE jest~inact = ''.
+
+  LOOP AT it_stat INTO wa_stat.
+
+    CLEAR v_stat.
+    SELECT SINGLE txt04 INTO v_stat 
+      FROM tj02t
+      WHERE istat = wa_stat-stat
+        AND spras = 'E'.
+
+  ENDLOOP.
+
+ 
+
+v_stat就是状态了，一个生产订单可以同时有几个状态的，所以要循环来取。
+ 
