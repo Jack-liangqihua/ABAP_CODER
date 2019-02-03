@@ -1,0 +1,111 @@
+REPORT Z_FI_FB50_BAPI.
+
+
+DATA: I_BUKRS LIKE T001-BUKRS     VALUE 'A001',       "公司代码
+      I_NETWR LIKE VBAP-NETWR     VALUE 1.            "金额
+
+PERFORM FRM_CREATE_BKPF USING I_BUKRS I_NETWR .
+*&---------------------------------------------------------------------*
+*&      Form  frm_create_bkpf
+*&---------------------------------------------------------------------*
+FORM FRM_CREATE_BKPF USING I_BUKRS I_NETWR  .
+
+*----------------------- Data definition -------------------------------
+  DATA: LW_DOCUMENTHEADER TYPE BAPIACHE09,           "凭证抬头
+        L_OBJ_TYPE        TYPE BAPIACHE09-OBJ_TYPE,
+        L_OBJ_KEY         TYPE BAPIACHE09-OBJ_KEY,
+        L_OBJ_SYS         TYPE BAPIACHE09-OBJ_SYS,
+
+        LT_ACCOUNTGL      TYPE TABLE OF BAPIACGL09,  "总账科目项
+        LW_ACCOUNTGL      TYPE BAPIACGL09,
+
+
+        LT_CURRENCYAMOUNT TYPE TABLE OF BAPIACCR09,  "货币项目
+        LW_CURRENCYAMOUNT TYPE BAPIACCR09,
+
+        LT_RETURN         TYPE TABLE OF BAPIRET2,
+        LW_RETURN         TYPE BAPIRET2,
+
+        LT_EXTENSION2     TYPE TABLE OF BAPIPAREX,   "参考结构
+        LW_EXTENSION2     TYPE BAPIPAREX,
+
+        LC_MSG_TEMP       TYPE STRING.
+*----------------------- header ----------------------------------------
+  LW_DOCUMENTHEADER-BUS_ACT    = 'RFBU'.                     "业务事务
+  LW_DOCUMENTHEADER-USERNAME   = SY-UNAME.                   "用户
+  LW_DOCUMENTHEADER-COMP_CODE  = I_BUKRS.                    "公司代码
+
+  LW_DOCUMENTHEADER-DOC_DATE   = SY-DATUM.                   "凭证中的凭证日期
+  LW_DOCUMENTHEADER-PSTNG_DATE = SY-DATUM.                   "凭证中的记帐日期
+  LW_DOCUMENTHEADER-DOC_TYPE   = 'SA'.                       "凭证类型,DZ:客户付款,SA:总账科目凭证
+  LW_DOCUMENTHEADER-HEADER_TXT = '费用记账-收款单创建'.       "凭证抬头文本,这个必须要带上才能创建成功
+*----------------------- Item ------------------------------------------
+*---货币项目
+  LW_CURRENCYAMOUNT-ITEMNO_ACC = 1.                          "行项目
+  LW_CURRENCYAMOUNT-CURRENCY   = 'CNY'.                      "货币
+  LW_CURRENCYAMOUNT-AMT_DOCCUR = I_NETWR.                    "金额
+  APPEND LW_CURRENCYAMOUNT TO LT_CURRENCYAMOUNT.
+
+  LW_CURRENCYAMOUNT-ITEMNO_ACC = 2.                          "行项目
+  LW_CURRENCYAMOUNT-CURRENCY = 'CNY'.                        "货币
+  LW_CURRENCYAMOUNT-AMT_DOCCUR = 0 - I_NETWR.                "金额
+  APPEND LW_CURRENCYAMOUNT TO LT_CURRENCYAMOUNT.
+
+
+
+
+
+*---总账科目
+  CLEAR LW_ACCOUNTGL.
+  LW_ACCOUNTGL-ITEMNO_ACC = 1.                               "行项目
+  LW_ACCOUNTGL-GL_ACCOUNT = '0010020101'.                    "总帐科目
+  LW_ACCOUNTGL-COMP_CODE  = I_BUKRS.                         "公司代码
+  APPEND LW_ACCOUNTGL TO LT_ACCOUNTGL.
+
+  CLEAR LW_ACCOUNTGL.
+  LW_ACCOUNTGL-ITEMNO_ACC = 2.                               "行项目
+  LW_ACCOUNTGL-GL_ACCOUNT = '0031010101'.                    "总帐科目,？
+  LW_ACCOUNTGL-COMP_CODE  = I_BUKRS.                         "公司代码
+  APPEND LW_ACCOUNTGL TO LT_ACCOUNTGL.
+
+*---扩展结构
+
+*
+*
+*  DATA: LW_FIELD_ENHANCE TYPE ZFI_E_001.
+*  LW_FIELD_ENHANCE-POSNR = 2.
+*  LW_FIELD_ENHANCE-ZZ0001 = '1201'.
+*
+*  LW_EXTENSION2-STRUCTURE = 'ZFI_E_001'.
+*  LW_EXTENSION2-VALUEPART1 = LW_FIELD_ENHANCE.
+*  APPEND LW_EXTENSION2 TO LT_EXTENSION2.
+
+
+
+*---call bapi
+  CALL FUNCTION 'BAPI_ACC_DOCUMENT_POST'
+    EXPORTING
+      DOCUMENTHEADER = LW_DOCUMENTHEADER
+    IMPORTING
+      OBJ_TYPE       = L_OBJ_TYPE
+      OBJ_KEY        = L_OBJ_KEY
+      OBJ_SYS        = L_OBJ_SYS
+    TABLES
+      ACCOUNTGL      = LT_ACCOUNTGL
+      CURRENCYAMOUNT = LT_CURRENCYAMOUNT
+      RETURN         = LT_RETURN
+*     EXTENSION2     = LT_EXTENSION2
+    .
+
+*---处理BAPI返回结果
+  DELETE LT_RETURN WHERE TYPE = 'S' OR TYPE = 'I' OR TYPE = 'W'.
+  IF LT_RETURN IS INITIAL.
+    CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+      EXPORTING
+        WAIT = 'X'.
+*    p_belnr     = l_obj_key(10).
+  ELSE.
+    CALL FUNCTION 'BAPI_TRANSACTION_ROLLBACK'.
+  ENDIF.
+
+ENDFORM.                    " FRM_CREATE_BKPF
