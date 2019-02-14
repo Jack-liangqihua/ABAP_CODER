@@ -1,3 +1,44 @@
+REPORT Z_SELECTION_SCREEN.
+
+
+PARAMETERS:P_RB_ST1 RADIOBUTTON GROUP RG1 DEFAULT 'X' USER-COMMAND SEL,
+           P_RB_ST2 RADIOBUTTON GROUP RG1.
+
+
+SELECTION-SCREEN ULINE.
+
+
+
+PARAMETERS: P_TXT1(10) TYPE C MODIF ID T1,
+            P_TXT2(10) TYPE C MODIF ID T2.
+
+
+
+AT SELECTION-SCREEN OUTPUT.
+
+  LOOP AT SCREEN.
+    P_TXT1  = ''.
+    P_TXT2  = ''.
+    IF P_RB_ST1 EQ 'X'.
+      IF SCREEN-GROUP1 = 'T1'.
+        SCREEN-ACTIVE = 0 .
+      ENDIF.
+    ELSE.
+      IF SCREEN-GROUP1 = 'T2'.
+        SCREEN-ACTIVE = 0 .
+      ENDIF.
+    ENDIF.
+
+    MODIFY SCREEN .
+  ENDLOOP.
+
+
+
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 
 
