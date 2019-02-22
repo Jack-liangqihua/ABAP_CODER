@@ -1,0 +1,19 @@
+
+函数：BALW_BAPIRETURN_GET2
+
+
+
+CALL FUNCTION 'BALW_BAPIRETURN_GET2'
+              EXPORTING
+                type      = msg_typ
+                cl        = msg_id
+                number    = msg_no
+                par1      = msg_v1
+                par2      = msg_v2
+                par3      = msg_v3
+                par4      = msg_v4
+                parameter = space
+                row       = space
+                field     = space
+              IMPORTING
+                return    = wa_return_tmp.
