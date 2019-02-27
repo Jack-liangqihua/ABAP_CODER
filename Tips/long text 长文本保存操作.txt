@@ -1,0 +1,61 @@
+REPORT Z_LONGTEXT_003.
+
+DATA : GS_HEADER TYPE THEAD,
+       GS_TLINE  TYPE TLINE,
+       GT_TLINE  TYPE STANDARD TABLE OF TLINE.
+
+
+INITIALIZATION.
+
+
+START-OF-SELECTION.
+
+
+*  Text Name       0000000043
+*  Language        ZH
+*  Text ID         0001
+*  Text Object     VBBK
+
+  GS_HEADER-TDOBJECT = 'VBBK'.
+  GS_HEADER-TDNAME = '0000000043'.
+  GS_HEADER-TDID = '0001'.
+  GS_HEADER-TDSPRAS = '1'.
+
+
+  DO  4 TIMES.
+    GS_TLINE-TDFORMAT = SY-INDEX.
+    GS_TLINE-TDLINE = '大家都快点快点快点开'.
+    APPEND GS_TLINE TO GT_TLINE.
+
+  ENDDO.
+
+
+END-OF-SELECTION .
+
+
+
+  CALL FUNCTION 'SAVE_TEXT'
+    EXPORTING
+*     CLIENT          = SY-MANDT
+      HEADER          = GS_HEADER
+*     INSERT          = ' '
+      SAVEMODE_DIRECT = 'X' "如果不打上X，可以用read_text读取，但无法显示在SAP屏幕上
+*     OWNER_SPECIFIED = ' '
+*     LOCAL_CAT       = ' '
+* IMPORTING
+*     FUNCTION        =
+*     NEWHEADER       =
+    TABLES
+      LINES           = GT_TLINE[]
+    EXCEPTIONS
+      ID              = 1
+      LANGUAGE        = 2
+      NAME            = 3
+      OBJECT          = 4
+      OTHERS          = 5.
+
+
+
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+  ENDIF.

@@ -1,0 +1,160 @@
+
+1、实例化对象
+
+
+CONSTANTS :line_length TYPE i VALUE '132'.
+
+TYPES:
+  BEGIN OF T_TEXTTABLE,
+    LINE  TYPE TDLINE,
+  END OF T_TEXTTABLE.
+
+DATA: OK_CODE LIKE SY-UCOMM.
+DATA:
+* Create reference to the custom container
+  CUSTOM_CONTAINER TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+* Create reference to the TextEdit control
+  EDITOR           TYPE REF TO CL_GUI_TEXTEDIT,
+  REPID            LIKE SY-REPID,
+  I_TEXTTABLE      TYPE TABLE OF T_TEXTTABLE.
+  
+  
+2、创建容器
+  
+  
+  
+  IF EDITOR IS INITIAL.
+    REPID = SY-REPID.
+*   Create obejct for custom container
+    CREATE OBJECT CUSTOM_CONTAINER
+      EXPORTING
+        CONTAINER_NAME              = 'MYCONTAINER1'
+      EXCEPTIONS
+        CNTL_ERROR                  = 1
+        CNTL_SYSTEM_ERROR           = 2
+        CREATE_ERROR                = 3
+        LIFETIME_ERROR              = 4
+        LIFETIME_DYNPRO_DYNPRO_LINK = 5
+        OTHERS                      = 6.
+    IF SY-SUBRC <> 0.
+      MESSAGE ID SY-MSGID TYPE 'I' NUMBER SY-MSGNO
+                 WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+    ENDIF.
+*   Create obejct for the TextEditor control
+    CREATE OBJECT EDITOR
+      EXPORTING
+        WORDWRAP_MODE              = CL_GUI_TEXTEDIT=>WORDWRAP_AT_FIXED_POSITION
+        WORDWRAP_POSITION          = LINE_LENGTH
+        WORDWRAP_TO_LINEBREAK_MODE = CL_GUI_TEXTEDIT=>TRUE
+        PARENT                     = CUSTOM_CONTAINER
+      EXCEPTIONS
+        ERROR_CNTL_CREATE          = 1
+        ERROR_CNTL_INIT            = 2
+        ERROR_CNTL_LINK            = 3
+        ERROR_DP_CREATE            = 4
+        GUI_TYPE_NOT_SUPPORTED     = 5
+        OTHERS                     = 6.
+    IF SY-SUBRC <> 0.
+      MESSAGE ID SY-MSGID TYPE 'I' NUMBER SY-MSGNO
+                 WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+    ENDIF.
+  ENDIF.
+
+
+3、读取输入后的文本
+   
+  
+  
+  
+  CALL METHOD EDITOR->GET_TEXT_AS_R3TABLE
+    IMPORTING
+      TABLE = I_TEXTTABLE
+      .
+	  
+	  
+4、更多操作
+	  
+	  
+	  
+	  "工具栏 0 不可见
+  CALL METHOD editor1->set_toolbar_mode
+    EXPORTING
+      toolbar_mode = 0.
+  "状态栏
+  CALL METHOD editor1->set_statusbar_mode
+    EXPORTING
+      statusbar_mode = 0.
+  "只读状态
+  CALL METHOD editor1->set_readonly_mode
+    EXPORTING
+      readonly_mode          = 1
+    EXCEPTIONS
+      error_cntl_call_method = 1
+      invalid_parameter      = 2
+      OTHERS                 = 3.
+  "设置文本
+  CALL METHOD editor1->set_text_as_r3table
+    EXPORTING
+      table = t_tdline1.
+ENDIF.
+
+"行保护-部分行不可编辑设置
+CALL METHOD editor1->protect_lines
+  EXPORTING
+    from_line              = 1        " 起始行
+    protect_mode           = 1        " 1 = 保护
+    to_line                = gv_line  " 结束行 - 为0也至少1行
+  EXCEPTIONS
+    error_cntl_call_method = 1
+    invalid_parameter      = 2
+    OTHERS                 = 3.
+
+*读取文本域数据 - R3内表
+CALL METHOD editor1->get_text_as_r3table
+  IMPORTING
+    table = t_tdline1.
+
+
+"1 , 读取文本编辑器内容 - 文本流
+CALL METHOD editor1->get_text_as_stream
+  
+"2 , 内表(文本流)转换为内表
+CALL FUNCTION 'CONVERT_STREAM_TO_ITF_TEXT'
+  
+"3 , 保存文本(ID,OBJECT 通过 SE75维护)
+CALL FUNCTION 'SAVE_TEXT'
+  
+ "4,读取文本
+CALL FUNCTION 'READ_TEXT'
+  
+"5 , 文本内表转文本流
+CALL FUNCTION 'CONVERT_ITF_TO_STREAM_TEXT'
+  
+"6 , 设置文本
+CALL METHOD editor1->set_text_as_stream 
+
+"7 , WORD  方式显示文本
+LOOP AT gt_line2.
+  gt_linew-tdformat  = '>X'.    "--格式:不可编辑--
+  gt_linew-tdline    = '*'.     "--文本行:前两字符为格式 --【* :标准格式】,否则SO10不能正常显示
+  gt_linew-tdline+2  = gt_line2-tdline.
+  APPEND gt_linew.
+ENDLOOP.
+
+CALL FUNCTION 'EDIT_TEXT'
+  EXPORTING
+    display   = 'X'   " 是否显示模式
+    header    = gs_headltx
+    save      = ''    " 是否存档
+  IMPORTING
+    function  = gv_txfunction   "返回结果 非空表示 有操作
+    newheader = gs_headltx
+    RESULT    = gs_result
+  TABLES
+    lines     = gt_linew.
+
+ " 8 , log 行
+CALL FUNCTION 'TEXT_CREATE_HISTORY_LINE'
+  IMPORTING
+    history_line = gt_line1-tdline.
+ 

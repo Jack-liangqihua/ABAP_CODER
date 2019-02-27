@@ -1,0 +1,183 @@
+SAP 函数模块
+
+  
+函数组：FACI
+摘要: FACI 这个函数组包含了很多处理财务凭证的函数 
+
+函数组：TRUX
+摘要: 函数组：TRUX，这个函数组包含了很多通用的转换函数
+
+函数组：CSAP（BOM 相关）
+摘要: 函数组：CSAP；经常有人寻找创建 BOM 的 BAPI，现在似乎没有统一的说法。下面这些函数都是可以 RFC 调用的，跟 BAPI 的使用方法类似
+
+函数组：QF05（随机数值生成器）
+摘要: 函数组：QF05；随机数值生成器，跟前几天说的函数组 F052 类似
+
+函数组：STXW（OTF 预览和转换器）
+摘要: STXW：OTF 预览和转换器，处理向 PDF 格式的转换
+
+函数组：F052（随机值的生成）
+摘要: F052：随机值的生成，可以生成各种随机数。
+
+函数组：STXK（SAPscript 文本转换）
+摘要: STXK：SAPscript 文本转换。
+
+函数组：STXKS（SAPscript text conversions）
+摘要: STXKS：SAPscript text conversions，SAPscript 文本表的转换；用于在行类型为任意字符的表和行类型为tline的表之间进行文本转换
+
+函数组：SPO1/2/3/4/5/6/8
+摘要: 这些函数组里包含了各种弹出对话框
+
+函数组：BUSG（SAP 商业图形库）
+摘要: BUSG：SAP商用制图，本函数组中包含很多用来把内表数据展示成图形的函数工具，调用后会打开一个普通 Windows 窗口，在其中显示图形
+
+
+函数组：STXKS
+摘要: 函数组：STXKS，SAPscript text conversions。 这个函数组中包含的两个函数可以把 SAPscript 格式（行结构为 TLINE）的文本内表和文本流内表（行结构为任意的纯文本构成）互相转换。
+
+函数组：SGFW
+摘要: 函数组：SGFW；GFW: Display (Standard) Graphics，可以把业务数据显示成图表形式。
+
+函数模块：F4_DATE
+摘要: 用这个函数可以获得日期类型字段的 F4 帮助。
+
+函数模块：POPUP_TO_DECIDE_LIST
+摘要: 这个函数模块可以弹出一个窗口，根据用户传入显示若干个单/多选按钮，并将用户选择返回。
+
+函数组：SHL2
+摘要: 函数组：SHL2，帮助功能，包含一些用于搜索帮助的特别函数。
+
+函数组：DLOG
+摘要: 函数组：DLOG，它的功能很简单，就是设置和获取参数 ID FLAG_DIALOG_STATUS 的值。这个参数控制系统是否禁止显示对话窗口，主要作用是在 BAPI 调用传统函数模块时禁止显示消息。自己编写 BAPI 时，需要用到。
+
+函数模块：TB_POPUP_FOR_BDC_CONTROL
+摘要: 这个函数模块运行后，会弹出一个对话框，要求用户选择 BDC 程序的执行模式和更新模式。 并且根据用户选择返回相应的值。
+
+函数 NUMERIC_CHECK
+摘要: 这个函数可以检查一个输入串的类型，返回CHAR或者NUMC，但是只能检查整数，带小数点的都被当作CHAR了。
+
+函数组：SECH
+摘要: 函数组：SECH，Cryptographic Hash Functions，内含一些加密函数，根据名称可以判断其作用。
+
+函数组：SVSM
+摘要: 函数组：SVSM，Value Request Manager，值请求管理，跟 SAP 的屏幕控件有关。 其中有一个函数 VRM_SET_VALUES 比较常用。
+
+函数组：SDIFRUNTIME
+摘要: 函数组：SDIFRUNTIME；Interfaces for Type Runtime Objects，获得与表相关的数据信息。
+
+函数组：RMDI
+摘要: 函数组：RMDI，这个函数组里包含了一些读取 ABAP 字典信息的函数。
+
+
+函数组：SCMS_CONV
+摘要: 函数组：SCMS_CONV，这个函数组包含了一些字符内码转换的函数：包括二进制、十六进制、字符串之间的互相转换。
+
+函数组：SFTP
+摘要: 函数组：SFTP。函数组说明：本函数组中的函数包括一些 FTP 和 HTTP 操作所用的函数。
+
+函数组：SCA4
+摘要: 函数组：SCA4：日历:时间(日期/时间) 这个函数组可以进行一些日历日期的处理。
+
+函数组：SUSE
+摘要: 函数组：SUSE；函数组说明：外部使用的功能模块； 这个函数组中的函数可以用来处理一些系统功能。
+
+函数模块：MAXIMAL_VALUE_GET
+摘要: 函数模块：MAXIMAL_VALUE_GET；函数组说明：Calculate maximum value，返回某个数据类型的最大值。
+
+函数模块：POPUP_TO_DECIDE_LIST
+摘要: 函数模块：POPUP_TO_DECIDE_LIST；这个函数模块弹出一个对话框，显示一定数量的单选按钮或复选框，让用户进行选择。
+
+函数组：SDIF
+摘要: 函数组：SDIF；函数组说明：ABAP/4 词典的界面（应翻译为接口）； 这个函数组可以用来操作 ABAP 字典中的数据对象，可以经常使用后缀为 GET 的，其它的慎用。
+
+函数模块：CTVB_COMPARE_TABLES
+摘要: 这个函数模块比较两个内表，将被删除、增加和修改的内表行分别分组输出。
+
+函数组：SLST
+摘要: 函数组：SLST；函数组说明：清单过程 - 附加功能； 本函数组中的函数可以用来对 SAP LIST 进行一些特殊的内存处理，如保存到 SAP 内存、保存到内表等。
+
+函数组：C13Z
+摘要: 函数组说明：本函数组中包含了一些对文件操作的函数模块。
+
+函数组：ICON
+摘要: 函数组：ICON：图形元素的常规功能。 这里的函数模块主要用来进行图标的处理。
+
+函数组：SDHI
+摘要: 函数组：SDHI：外部应用程序 F4 界面模块。 当ABAP 开发者想要自己设计 F4 帮助，不用 SAP 提供的标准值帮助时，可以使用下列函数。
+
+函数组：SI72
+摘要: 函数组：SI72。函数组说明： KEN: Info Object editor link。 里面部分函数可以操作本地文件夹和文件。
+
+函数模块：ALSM_EXCEL_TO_INTERNAL_TABLE
+摘要: 函数模块：ALSM_EXCEL_TO_INTERNAL_TABLE。作用，把一个 Excel 文件中的内容读到内表中。
+
+函数组：V05C
+摘要: 函数组：V05C：RV SD 单据流累积数量。 
+里面的函数可以读取销售凭证的凭证流。
+
+函数组：SEUT
+摘要: 函数组：SEUT：层次管理。 
+这个函数组中包含的函数模块都用来完成 LIST 输出的树型控件的操作。 
+
+
+函数组：SCAL
+摘要: 函数组：SCAL：日历功能。 
+这个函数组中的函数主要用来根据工厂日历进行各种日期的计算。
+
+函数模块：POPUP_TO_INFORM
+摘要: 这个函数模块可以弹出最多带有 4 行文本的提示框。
+
+函数组：SGUI
+摘要: 函数组：SGUI，SAPgui 界面 
+这个函数组里面的函数都用来处理客户端的一些特殊操作阅读全文
+
+函数组：SURL
+摘要: 函数组：SURL，编写 WebRFC 时所用的函数 
+请参考 BC440 标准教材的第八单元以获得更多信息。
+
+函数组：SCUN
+摘要: 函数组：SCUN：Translation of Currency Amounts: new 
+这个函数组主要包含了读取、计算汇率和转换金额的函数
+
+函数组：CSTR
+摘要: 函数组：CSTR：类型C字段的串功能 
+本函数组主要执行一些特殊的字符串功能，比如半角全角转换、字符串连接、拆分等。
+
+函数组：V45I
+摘要: 函数组：V45I：读销售单据表 
+这个函数组包含的函数主要用来读取各类销售单据表，如：VBAK、VBAP、VBEP、VBFA、VBKD、VBPA、VBUK、VBUP 等。 
+
+
+函数组：MAME
+摘要: 函数组：MAME：物料主记录: 确定计量单位 
+这个函数组包含的函数主要用来进行计量单位的转换、获取条码数据等等
+
+函数组：SFES
+摘要: 函数组：SFES：Frontend services 
+这个函数组中包含的函数模块主要用来进行 SAPGUI 所在计算机的各种本机操作，如文件和文件夹的增删改、运行程序、访问注册表、上传下载文件等。
+
+函数组：THFB
+摘要: 函数组：THFB，Task handler functions 
+这个函数组里面包含了很多跟系统底层相关的函数，比如获得当前登录系统的用户清单、工作进程清单等等。
+
+DATE_GET_WEEK 和 WEEK_GET_FIRST_DAY
+摘要: 两个常用的日期函数
+
+HR_GBSSP_GET_WEEK_DATES
+摘要: 函数模块作用：获得某个日期所在周的相关信息。
+
+POPUP_TO_SELECT_MONTH
+摘要: 函数模块作用：弹出一个对话框显示月份和年度下拉列表，让用户选择年月。 
+
+
+WEEKDAY_GET
+摘要: 函数模块作用：从数据表中获得指定语言每周七天的名称。
+
+CONVERSION_EXIT_ALPHA_OUTPUT
+摘要: 函数模块：CONVERSION_EXIT_ALPHA_OUTPUT 介绍，删除编号的前置 0。
+
+CONVERSION_EXIT_ALPHA_INPUT
+摘要: 函数模块：CONVERSION_EXIT_ALPHA_INPUT，给某个编号添加前置的 0。
+
+BKK_ADD_MONTH_TO_DATE
+摘要: 函数模块：BKK_ADD_MONTH_TO_DATE 的介绍，给某个日期加上若干个月。
