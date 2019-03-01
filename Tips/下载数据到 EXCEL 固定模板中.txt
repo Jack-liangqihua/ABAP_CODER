@@ -1,0 +1,407 @@
+REPORT Z_TEST02.
+
+
+* 1 .首先制作模板，通过SMW0 上传 二进制文件 到SAP
+* 2 .运行程序后，自动下载数据到模板中
+
+
+
+TYPE-POOLS:OLE2.
+*&---------------------------------------------------------------------*
+*数据定义
+*&---------------------------------------------------------------------*
+DATA:BEGIN OF GS_INFO,
+       NAME       TYPE C LENGTH 20,
+       SEX        TYPE C LENGTH 2,
+       AGE        TYPE N LENGTH 3,
+       DEPARTMENT TYPE C LENGTH 20,
+       GROUP      TYPE N LENGTH 6,
+       RZDATE     TYPE ERSDA, "入职时间
+       INDEX      TYPE I, "条目
+       JLDATE     TYPE ERSDA, "工作经历时间
+       COMPANY    TYPE C LENGTH 20, "公司
+       POSITION   TYPE C LENGTH 20, "职位
+       JOBCONTENT TYPE C LENGTH 20, "工作内容
+     END OF GS_INFO.
+DATA GT_INFO LIKE TABLE OF GS_INFO.
+DATA GS_HEAD LIKE GS_INFO.
+DATA:V_EXCEL    TYPE OLE2_OBJECT,
+     V_WORKBOOK TYPE OLE2_OBJECT,
+     V_SHEET    TYPE OLE2_OBJECT,
+     V_RANGE    TYPE OLE2_OBJECT,
+     V_CELL     TYPE OLE2_OBJECT,
+     V_FONT     TYPE OLE2_OBJECT,
+     V_BORDER   TYPE OLE2_OBJECT,
+     V_ROW      TYPE OLE2_OBJECT,
+     V_COLUMN   TYPE OLE2_OBJECT.
+
+DATA GV_FILE TYPE LOCALFILE."文件完整路径
+*&---------------------------------------------------------------------*
+*选择屏幕
+*&---------------------------------------------------------------------*
+PARAMETERS: P_NAME   TYPE C LENGTH 20 OBLIGATORY, "姓名
+            P_SEX    TYPE C LENGTH 2, "性别
+            P_AGE    TYPE N LENGTH 3, "年龄
+            P_DEPART TYPE C LENGTH 20, "部门
+            P_GROUP  TYPE N LENGTH 6, "小组
+            P_RZDATE TYPE ERSDA. "入职时间
+*&---------------------------------------------------------------------*
+*START-OF-SELECTION
+*&---------------------------------------------------------------------*
+START-OF-SELECTION.
+  PERFORM FRM_SET_DATA.
+  PERFORM FRM_EXCEL.
+*&---------------------------------------------------------------------*
+*& Form FRM_SET_DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_SET_DATA .
+
+  DATA LV_INDEX TYPE CHAR4.
+  DO 10 TIMES.
+    LV_INDEX = SY-INDEX.
+    CONDENSE LV_INDEX NO-GAPS.
+    IF SY-INDEX = 1.
+      "表头部分
+      GS_HEAD-NAME = P_NAME.
+      GS_HEAD-SEX = P_SEX.
+      GS_HEAD-AGE = P_AGE.
+      GS_HEAD-DEPARTMENT = P_DEPART.
+      GS_HEAD-GROUP = P_GROUP.
+      GS_HEAD-RZDATE = P_RZDATE.
+    ENDIF.
+    "主体部分
+    GS_INFO-INDEX = SY-INDEX.
+    GS_INFO-JLDATE = SY-DATUM.
+    CONCATENATE 'COMPANY' LV_INDEX INTO GS_INFO-COMPANY.
+    GS_INFO-POSITION  = '点心师'.
+    GS_INFO-JOBCONTENT = '做点心'.
+    APPEND GS_INFO TO GT_INFO.
+    CLEAR GS_INFO.
+  ENDDO.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_EXCEL
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_EXCEL .
+  "获取模板文件路径并下载模板
+  PERFORM FRM_SET_FILE.
+  "打开模板文件并填充数据
+  PERFORM FRM_FILL_FILE.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_SET_FILE
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_SET_FILE.
+  DATA: LS_WWWDATA  TYPE WWWDATATAB,
+        LS_MIME     TYPE W3MIME,
+        LV_FILENAME TYPE STRING VALUE '人员信息表', "默认文件名
+        LV_PATH     TYPE STRING VALUE 'C:\Users\MRJIANG\Desktop\abaptest', "默认路径
+        LV_FULLPATH TYPE STRING VALUE 'C:\Users\MRJIANG\Desktop\abaptest\人员信息表', "默认完全路径
+        LV_MSG      TYPE CHAR100,
+        LV_SUBRC    LIKE SY-SUBRC.
+  DATA LV_OBJID TYPE WWWDATATAB-OBJID VALUE 'ZCKS_SO_COMFIRM'. "上传的EXCEL时设置的对象名
+  "打开保存文件对话框
+  CALL METHOD CL_GUI_FRONTEND_SERVICES=>FILE_SAVE_DIALOG
+    EXPORTING
+      WINDOW_TITLE              = '人员信息保存' "标题
+      DEFAULT_EXTENSION         = 'xls' "文件类型
+      DEFAULT_FILE_NAME         = LV_FILENAME "默认文件名
+*     WITH_ENCODING             =
+*     FILE_FILTER               =
+*     INITIAL_DIRECTORY         =
+*     PROMPT_ON_OVERWRITE       = 'X'
+    CHANGING
+      FILENAME                  = LV_FILENAME "传出文件名
+      PATH                      = LV_PATH "传出路径
+      FULLPATH                  = LV_FULLPATH "传出完全路径
+*     USER_ACTION               =
+*     FILE_ENCODING             =
+    EXCEPTIONS
+      CNTL_ERROR                = 1
+      ERROR_NO_GUI              = 2
+      NOT_SUPPORTED_BY_GUI      = 3
+      INVALID_DEFAULT_FILE_NAME = 4
+      OTHERS                    = 5.
+  IF SY-SUBRC <> 0.
+    MESSAGE '调用文件保存对话框出错' TYPE 'E'.
+  ELSE.
+    "赋值文件完整路径
+    GV_FILE = LV_FULLPATH.
+    "检查模板是否已存在SAP中
+    SELECT SINGLE *
+      INTO CORRESPONDING FIELDS OF LS_WWWDATA
+      FROM WWWDATA
+      WHERE SRTF2 = 0
+      AND RELID = 'MI'"MIME类型
+      AND OBJID = LV_OBJID.
+    IF SY-SUBRC NE 0.
+      CONCATENATE '模板' LV_OBJID '.xls不存在' INTO LV_MSG.
+      MESSAGE LV_MSG TYPE 'E'.
+    ELSE."模板文件存在则下载模板
+
+      CALL FUNCTION 'DOWNLOAD_WEB_OBJECT'
+        EXPORTING
+          KEY         = LS_WWWDATA "对象
+          DESTINATION = GV_FILE "完整下载路径
+        IMPORTING
+          RC          = LV_SUBRC
+*       CHANGING
+*         TEMP        = TEMP
+        .
+      IF LV_SUBRC NE 0.
+        CONCATENATE '模板' LV_OBJID '.xls下载失败' INTO LV_MSG.
+        MESSAGE LV_MSG TYPE 'E'.
+      ENDIF.
+    ENDIF.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_FILL_FILE
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_FILL_FILE .
+  "创建EXCEL对象
+  CREATE OBJECT V_EXCEL 'EXCEL.APPLICATION'.
+  "设置前台显示
+  SET PROPERTY OF V_EXCEL 'VISIBLE' = 1.
+  "创建工作区对象
+  CALL METHOD OF V_EXCEL 'WORKBOOKS' = V_WORKBOOK.
+  "打开模板文件
+  CALL METHOD OF V_WORKBOOK 'OPEN'
+    EXPORTING
+      #1 = GV_FILE.
+  "获取当前活动SHEET
+  GET PROPERTY OF V_EXCEL 'ACTIVESHEET' = V_SHEET.
+  "填充表头数据
+  PERFORM FRM_HEADER.
+  "填充主体部分（工作经历）
+  PERFORM FRM_BODY.
+  "自动优化列宽
+  PERFORM FRM_COL_OPT.
+  "保存文件
+  PERFORM FRM_SAVE.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_HEADER
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_HEADER .
+  PERFORM FRM_CELL USING: 1 1 GS_HEAD-NAME       12 1 ,"行号 列号 单元格值 字体大小 字体颜色
+                          2 3 GS_HEAD-SEX        12 1,
+                          2 5 GS_HEAD-AGE        12 1,
+                          2 8 GS_HEAD-DEPARTMENT 12 1,
+                          4 3 GS_HEAD-GROUP      12 1,
+                          4 5 GS_HEAD-RZDATE     12 1.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_CELL
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> P_3
+*&      --> P_2
+*&      --> GS_HEAD_NAME
+*&---------------------------------------------------------------------*
+FORM FRM_CELL  USING    P_ROW
+                        P_COL
+                        P_VALUE
+                        P_SIZE
+                        P_FCOLOR "字体颜色
+                        .
+  "创建单元格对象
+  CALL METHOD OF V_EXCEL 'CELLS' = V_CELL
+  EXPORTING
+    #1 = P_ROW
+    #2 = P_COL.
+  SET PROPERTY OF V_CELL 'VALUE' = P_VALUE.
+  CALL METHOD OF V_CELL 'FONT' = V_FONT.
+  SET PROPERTY OF V_FONT 'SIZE' = P_SIZE.
+  SET PROPERTY OF V_FONT 'COLORINDEX' = P_FCOLOR.
+  "用完释放对象
+  FREE OBJECT V_CELL.
+  FREE OBJECT V_FONT.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_BODY
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_BODY .
+  DATA LV_ROW TYPE CHAR4.
+  DATA: LV_ZS TYPE CHAR5,
+        LV_YX TYPE CHAR5.
+  DATA LV_COUNT TYPE I VALUE 6.
+  FIELD-SYMBOLS <FS_FIELD>.
+
+  LOOP AT GT_INFO INTO GS_INFO.
+    LV_ROW = SY-TABIX + 6."6为表头部分所占行数
+    IF SY-TABIX = 1.
+      "先设置第7行的格式
+      CONCATENATE 'E' LV_ROW INTO LV_ZS.
+      CONCATENATE 'F' LV_ROW INTO LV_YX.
+      CONDENSE LV_ZS NO-GAPS.
+      CONDENSE LV_YX NO-GAPS.
+      PERFORM FRM_RANGE USING LV_ZS LV_YX 1 -4108."合并第7行的第5列第6列 E7-F7
+      CLEAR :LV_ZS,LV_YX.
+      CONCATENATE 'A' LV_ROW INTO LV_ZS.
+      CONCATENATE 'F' LV_ROW INTO LV_YX.
+      CONDENSE LV_ZS NO-GAPS.
+      CONDENSE LV_YX NO-GAPS.
+      PERFORM FRM_BORDER USING LV_ZS LV_YX 1 2 1."左上列号 右下列号 边框格式 边框粗细 边框颜色 A7-F7
+    ELSE.
+      "填充剩余行
+      PERFORM FRM_COPY USING LV_ROW."复制第7行的格式
+    ENDIF.
+    DO 5 TIMES.
+      LV_COUNT = LV_COUNT + 1."因为定义的GS_INFO前6个字段是表头部分的  所以从第7个字段开始赋值
+      ASSIGN COMPONENT LV_COUNT OF STRUCTURE GS_INFO TO <FS_FIELD>.
+      PERFORM FRM_CELL USING LV_ROW SY-INDEX <FS_FIELD> 11 1.
+    ENDDO.
+    LV_COUNT = 6.
+    CLEAR GS_INFO.
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_RANGE
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_RANGE USING  P_ZS TYPE CHAR5"左上列号
+                       P_YX TYPE CHAR5 "右下列号
+                       P_MERGE
+                       P_ALIGNMENT.
+  "创建范围对象
+  CALL METHOD OF V_EXCEL 'RANGE' = V_RANGE
+  EXPORTING
+    #1 = P_ZS
+    #2 = P_YX.
+  "选中范围
+  CALL METHOD OF V_RANGE 'SELECT'.
+  "合并
+  SET PROPERTY OF V_RANGE 'MERGECELLS' = P_MERGE.
+  "居中
+  SET PROPERTY OF V_RANGE 'HORIZONTALALIGNMENT' = P_ALIGNMENT.
+  FREE OBJECT V_RANGE.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_BORDER
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> P_1
+*&      --> P_6
+*&      --> P_1
+*&      --> P_2
+*&      --> P_1
+*&---------------------------------------------------------------------*
+FORM FRM_BORDER  USING    P_ZS TYPE CHAR5
+                           P_YX TYPE CHAR5
+                           P_LINE
+                           P_WEIGHT
+                           P_LCOLOR .
+  "创建范围对象
+  CALL METHOD OF V_EXCEL 'RANGE' = V_RANGE
+  EXPORTING
+    #1 = P_ZS
+    #2 = P_YX.
+  "填充边框
+  DO 4 TIMES.
+    CALL METHOD OF V_RANGE 'BORDERS' = V_BORDER
+    EXPORTING
+      #1 = SY-INDEX.
+    SET PROPERTY OF V_BORDER 'LINESTYLE' = 1."格式
+    SET PROPERTY OF V_BORDER 'WEIGHT' = 2."粗细 最粗为4
+    SET PROPERTY OF V_BORDER 'COLORINDEX' = 1."黑色
+  ENDDO.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_COPY
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_COPY USING P_ROW."当前正在填充数据的行号
+  "创建第7行整行对象
+  CALL METHOD OF V_SHEET 'ROWS' = V_ROW
+  EXPORTING
+    #1 = 7.
+  CALL METHOD OF V_ROW 'SELECT'.
+  "复制整行到剪贴板
+  CALL METHOD OF V_ROW 'COPY'.
+  FREE OBJECT V_ROW.
+  "创建当前行的整行对象
+  CALL METHOD OF V_SHEET 'ROWS' = V_ROW
+  EXPORTING
+    #1 = P_ROW.
+  CALL METHOD OF V_ROW 'SELECT'.
+  "在当前行中执行粘贴操作
+  CALL METHOD OF V_ROW 'INSERT'.
+  "清空当前行的内容
+  CALL METHOD OF V_ROW 'CLEARCONTENTS'.
+
+  FREE OBJECT V_ROW.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_SAVE
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_SAVE .
+  "获取当前活动的工作区
+  GET PROPERTY OF V_EXCEL 'ACTIVEWORKBOOK' = V_WORKBOOK.
+  "保存
+  CALL METHOD OF V_WORKBOOK 'SAVE'.
+  FREE OBJECT V_EXCEL.
+  FREE OBJECT V_WORKBOOK.
+  FREE OBJECT V_SHEET.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form FRM_COL_OPT
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM FRM_COL_OPT .
+  "创建列对象
+  CALL METHOD OF V_EXCEL 'COLUMNS' = V_COLUMN.
+  "列自动优化
+  CALL METHOD OF V_COLUMN 'AUTOFIT'.
+ENDFORM.
