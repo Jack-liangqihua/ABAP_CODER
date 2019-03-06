@@ -1,0 +1,17 @@
+TABLES sscrfields.
+
+
+*初始化数据
+INITIALIZATION.
+
+  SSCRFIELDS-FUNCTXT_01 = '下载模板'.    "定义按钮文本	
+  
+  
+  
+  
+  *逻辑取数
+START-OF-SELECTION.
+
+  CASE SSCRFIELDS-UCOMM.
+    WHEN OTHERS.
+  ENDCASE.
