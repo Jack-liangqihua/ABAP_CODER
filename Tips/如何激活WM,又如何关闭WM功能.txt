@@ -1,0 +1,5 @@
+系统启用了WMS模块该怎么取消？
+问：系统启用了WMS模块该怎么取消创建完交货单 去拣配的时候 拣配的时候拣配数量那里是0并且是灰的
+直接过帐系统会提示 E VL 609 Delivery has not yet been put away / picked (completely) E VL 608 Delivery has not yet been completely processed by WM
+该怎么解决
+答：你的库存地进行了WM管理，只要不给工厂的库存地分配仓库号就可以了，路径：企业结构－分配－后勤执行－给地点存储地点分配仓库编码，进去把分配的仓库编码去掉就OK了
