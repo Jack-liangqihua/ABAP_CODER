@@ -1,0 +1,11 @@
+SAP 常用的库存表
+
+
+库存类型	当前库存	历史库存	库存金额	历史库存金额
+工厂级别库存	MARC      MARCH		MBEW	MBEWH
+库存地点库存	MARD	  MARDH		MBEW	MBEWH
+供应商寄售库存	MKOL	  MKOLH		MBEW	MBEWH
+客户寄售库存	MSKU	  MSKUH		MBEW	MBEWH
+供应商外包库存	MSLB	  MSLBH		MBEW	MBEWH
+销售订单库存	MSKA	  MSKAH		EBEW	EBEWH
+批次库存	    MCHB	  MCHB		MBEW	MBEWH
