@@ -1,0 +1,5 @@
+KONH是条件技术中，用来记录条件记录号的抬头表，通过这个可以找到项目表中对应的金额。
+　　1. KONH和KONP通过condition record no.匹配
+　　2. EINA和EINE通过info record no.匹配
+　　3. KONH/KONP和EINA/EINE之间没有直接匹配的字段，关联关系在KONH的Varkey字段里，这个字段组合了物料，供应商，采购组织，工厂，采购信息记录属性这些字段，成为一个字符串。
+　　4. 如果信息记录是维护在指定工厂级的，那表A017就和KONH有了关联，在A017里有condition record no.，也有供应商，物料，采购组织，工厂等信息。也就是说通过A017把KONH和EINA可以串起来了。
