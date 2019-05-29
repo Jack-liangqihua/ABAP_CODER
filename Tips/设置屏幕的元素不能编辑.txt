@@ -1,0 +1,13 @@
+*---------------------------------------------------------------------* 
+*   FRM_SET_NEDIT. 
+*   设置屏幕的元素不能编辑 
+* 
+*---------------------------------------------------------------------* 
+FORM  FRM_SET_NEDIT.
+	LOOP  AT  SCREEN .
+		IF  SCREEN -NAME EQ  'P_WERKS' .
+			SCREEN -INPUT  = '0' .
+			MODIFY  SCREEN .
+		ENDIF .
+	ENDLOOP .
+ENDFORM .       
