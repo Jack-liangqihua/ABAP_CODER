@@ -1,0 +1,45 @@
+1、下面函数是检查日期的合法性的函数
+
+CALL FUNCTION 'DATE_CHECK_PLAUSIBILITY'
+EXPORTING
+date = v_date
+EXCEPTIONS
+plausibility_check_failed = 1
+OTHERS = 2.
+IF sy-subrc NE 0. "如果返回非0，则日期不合法
+.
+.
+ENDIF. 
+
+
+
+2、下面函数是检查时间合法性的函数
+
+CALL FUNCTION 'TIME_CHECK_PLAUSIBILITY'
+EXPORTING
+time = v_time
+EXCEPTIONS
+plausibility_check_failed = 1
+OTHERS = 2.
+IF sy-subrc NE 0. "如果返回非0，则时间不合法
+.
+.
+ENDIF.
+
+
+
+注意：以上两个函数，输入参数如果不是日期或时间类型的话，会dump，比如随便输“abcdef”
+
+也可以用下面类型转换的方法来判断
+
+DATA: LV_DATE TYPE SY-DATUM,
+      LV_C(8).
+
+LV_C = 'abcd‘.
+LV_DATE = LV_C.
+
+IF LV_DATE = 0.
+  WRITE: LV_DATE,'错误'.
+ELSE.
+  WRITE: LV_DATE,'正确'.
+ENDIF. 
