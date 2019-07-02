@@ -1,0 +1,402 @@
+https://answers.sap.com/questions/3737424/bapisalesorderchange-change-partner-address.html
+
+
+
+
+REPORT z_salesorder_address_change.
+
+DATA:
+
+w_view TYPE order_view,
+
+w_vbeln TYPE sales_key,
+
+w_hdr_o TYPE bapisdhd,
+
+w_itm_o TYPE bapisdit,
+
+w_schd_o TYPE bapisdhedu,
+
+w_buss_o TYPE bapisdbusi,
+
+w_part_o TYPE bapisdpart,
+
+w_adr_o TYPE bapisdcoad,
+
+w_st_hdr_o TYPE bapisdhdst,
+
+w_st_itm_o TYPE bapisditst,
+
+w_cond_o TYPE bapisdcond,
+
+w_cond_h TYPE bapicondhd,
+
+w_cond_i TYPE bapicondit,
+
+w_cond_qty TYPE bapicondqs,
+
+w_cond_val TYPE bapicondvs,
+
+w_contr_o TYPE bapisdcntr,
+
+w_txt_h TYPE bapisdtehd,
+
+w_txtln_o TYPE bapitextli,
+
+w_flow_o TYPE bapisdflow,
+
+w_curefs TYPE bapicurefm,
+
+w_cucfgs TYPE bapicucfgm,
+
+w_cuins TYPE bapicuinsm,
+
+w_cuprts TYPE bapicuprtm,
+
+w_cuvals TYPE bapicuvalm,
+
+w_cublbs TYPE bapicublbm,
+
+w_cuvks TYPE bapicuvkm,
+
+w_bilpln TYPE bapisdbpl,
+
+w_bildate TYPE bapisdbpld,
+
+w_cred_cart TYPE bapiccardm,
+
+w_extens TYPE bapiparex.
+
+DATA:
+
+i_vbeln TYPE TABLE OF sales_key,
+
+i_hdr_o TYPE TABLE OF bapisdhd,
+
+i_itm_o TYPE TABLE OF bapisdit,
+
+i_schd_o TYPE TABLE OF bapisdhedu,
+
+i_buss_o TYPE TABLE OF bapisdbusi,
+
+i_part_o TYPE TABLE OF bapisdpart,
+
+i_adr_o TYPE TABLE OF bapisdcoad,
+
+i_st_hdr_o TYPE TABLE OF bapisdhdst,
+
+i_st_itm_o TYPE TABLE OF bapisditst,
+
+i_cond_o TYPE TABLE OF bapisdcond,
+
+i_cond_h TYPE TABLE OF bapicondhd,
+
+i_cond_i TYPE TABLE OF bapicondit,
+
+i_cond_qty TYPE TABLE OF bapicondqs,
+
+i_cond_val TYPE TABLE OF bapicondvs,
+
+i_contr_o TYPE TABLE OF bapisdcntr,
+
+i_txt_h TYPE TABLE OF bapisdtehd,
+
+i_txtln_o TYPE TABLE OF bapitextli,
+
+i_flow_o TYPE TABLE OF bapisdflow,
+
+i_curefs TYPE TABLE OF bapicurefm,
+
+i_cucfgs TYPE TABLE OF bapicucfgm,
+
+i_cuins TYPE TABLE OF bapicuinsm,
+
+i_cuprts TYPE TABLE OF bapicuprtm,
+
+i_cuvals TYPE TABLE OF bapicuvalm,
+
+i_cublbs TYPE TABLE OF bapicublbm,
+
+i_cuvks TYPE TABLE OF bapicuvkm,
+
+i_bilpln TYPE TABLE OF bapisdbpl,
+
+i_bildate TYPE TABLE OF bapisdbpld,
+
+i_cred_cart TYPE TABLE OF bapiccardm,
+
+i_extens TYPE TABLE OF bapiparex.
+
+DATA:
+
+i_ret TYPE TABLE OF bapiret2,
+
+i_item TYPE TABLE OF bapisditm,
+
+i_item_x TYPE TABLE OF bapisditmx,
+
+i_partn TYPE TABLE OF bapiparnr,
+
+i_part_ch TYPE TABLE OF bapiparnrc,
+
+i_addr TYPE TABLE OF bapiaddr1,
+
+i_cnf_ref TYPE TABLE OF bapicucfg,
+
+i_cnf_ins TYPE TABLE OF bapicuins,
+
+i_cnf_part TYPE TABLE OF bapicuprt,
+
+i_cnf_val TYPE TABLE OF bapicuval,
+
+i_cnf_blob TYPE TABLE OF bapicublb,
+
+i_cnf_vk TYPE TABLE OF bapicuvk,
+
+i_cnf_ref_ins TYPE TABLE OF bapicuref,
+
+i_schl TYPE TABLE OF bapischdl,
+
+i_schl_x TYPE TABLE OF bapischdlx,
+
+i_ordtxt TYPE TABLE OF bapisdtext,
+
+i_ord_keys TYPE TABLE OF bapisdkey,
+
+i_cond TYPE TABLE OF bapicond,
+
+i_cond_x TYPE TABLE OF bapicondx.
+
+DATA:
+
+w_hdr TYPE bapisdh1,
+
+w_hdr_x TYPE bapisdh1x,
+
+w_ret TYPE bapiret2,
+
+w_item TYPE bapisditm,
+
+w_item_x TYPE bapisditmx,
+
+w_partn TYPE bapiparnr,
+
+w_part_ch TYPE bapiparnrc,
+
+w_addr TYPE bapiaddr1,
+
+w_cnf_ref TYPE bapicucfg,
+
+w_cnf_ins TYPE bapicuins,
+
+w_cnf_part TYPE bapicuprt,
+
+w_cnf_val TYPE bapicuval,
+
+w_cnf_blob TYPE bapicublb,
+
+w_cnf_vk TYPE bapicuvk,
+
+w_cnf_ref_ins TYPE bapicuref,
+
+w_schl TYPE bapischdl,
+
+w_schl_x TYPE bapischdlx,
+
+w_ordtxt TYPE bapisdtext,
+
+w_ord_keys TYPE bapisdkey,
+
+w_cond TYPE bapicond,
+
+w_cond_x TYPE bapicondx.
+
+PARAMETERS: p_vbeln TYPE vbeln.
+
+MOVE: 'X' TO w_view-header.
+
+MOVE: 'X' TO w_view-item.
+
+MOVE: 'X' TO w_view-sdschedule.
+
+MOVE: 'X' TO w_view-business.
+
+MOVE: 'X' TO w_view-partner.
+
+MOVE: 'X' TO w_view-address.
+
+MOVE: 'X' TO w_view-status_h.
+
+MOVE: 'X' TO w_view-status_i.
+
+MOVE: 'X' TO w_view-sdcond.
+
+MOVE: 'X' TO w_view-sdcond_add.
+
+MOVE: 'X' TO w_view-contract.
+
+MOVE: 'X' TO w_view-text.
+
+MOVE: 'X' TO w_view-flow.
+
+MOVE: 'X' TO w_view-billplan.
+
+MOVE: 'X' TO w_view-configure.
+
+MOVE: 'X' TO w_view-credcard.
+
+MOVE: 'X' TO w_view-incomp_log.
+
+MOVE p_vbeln TO w_vbeln-vbeln.
+
+APPEND w_vbeln TO i_vbeln.
+
+CALL FUNCTION 'BAPISDORDER_GETDETAILEDLIST'
+
+EXPORTING
+
+i_bapi_view = w_view
+
+TABLES
+
+sales_documents = i_vbeln
+
+order_headers_out = i_hdr_o
+
+order_items_out = i_itm_o
+
+order_schedules_out = i_schd_o
+
+order_business_out = i_buss_o
+
+order_partners_out = i_part_o
+
+order_address_out = i_adr_o
+
+order_statusheaders_out = i_st_hdr_o
+
+order_statusitems_out = i_st_itm_o
+
+order_conditions_out = i_cond_o
+
+order_cond_head = i_cond_h
+
+order_cond_item = i_cond_i
+
+order_cond_qty_scale = i_cond_qty
+
+order_cond_val_scale = i_cond_val
+
+order_contracts_out = i_contr_o
+
+order_textheaders_out = i_txt_h
+
+order_textlines_out = i_txtln_o
+
+order_flows_out = i_flow_o
+
+order_cfgs_curefs_out = i_curefs
+
+order_cfgs_cucfgs_out = i_cucfgs
+
+order_cfgs_cuins_out = i_cuins
+
+order_cfgs_cuprts_out = i_cuprts
+
+order_cfgs_cuvals_out = i_cuvals
+
+order_cfgs_cublbs_out = i_cublbs
+
+order_cfgs_cuvks_out = i_cuvks
+
+order_billingplans_out = i_bilpln
+
+order_billingdates_out = i_bildate
+
+order_creditcards_out = i_cred_cart
+
+extensionout = i_extens.
+
+MOVE 'U' TO w_hdr_x.
+
+READ TABLE i_hdr_o INTO w_hdr_o INDEX 1.
+
+MOVE w_hdr_o-sales_org TO w_hdr-sales_org.
+
+MOVE w_hdr_o-distr_chan TO w_hdr-distr_chan.
+
+MOVE w_hdr_o-division TO w_hdr-division.
+
+MOVE w_vbeln-vbeln TO w_part_ch-document.
+
+MOVE 'U' TO w_part_ch-updateflag.
+
+MOVE 'RE' TO w_part_ch-partn_role.
+
+MOVE 'RE' TO w_partn-partn_role.
+
+LOOP AT i_part_o INTO w_part_o.
+
+IF w_part_o-partn_role = 'RE'.
+
+MOVE '999999' TO w_part_ch-addr_link.
+
+MOVE w_part_o-address TO w_part_ch-address.
+
+MOVE w_part_o-customer TO w_part_ch-p_numb_old.
+
+MOVE w_part_o-customer TO w_part_ch-p_numb_new.
+
+EXIT.
+
+ENDIF.
+
+ENDLOOP.
+
+APPEND w_part_ch TO i_part_ch.
+
+MOVE '999999' TO w_addr-addr_no.
+
+MOVE 'AAAAAAAAAAAA' TO w_addr-name.
+
+MOVE 'BBBBBBBBBBBBBBB' TO w_addr-street.
+
+MOVE '11' TO w_addr-house_no.
+
+MOVE '1111 AA' TO w_addr-postl_cod1.
+
+MOVE 'ZZZZZZZZZZZZZZZ' TO w_addr-city.
+
+MOVE 'NL' TO w_addr-country.
+
+MOVE 'NL' TO w_addr-langu.
+
+APPEND w_addr TO i_addr.
+
+CALL FUNCTION 'BAPI_SALESORDER_CHANGE'
+
+EXPORTING
+
+salesdocument = w_vbeln-vbeln
+
+order_header_in = w_hdr
+
+order_header_inx = w_hdr_x
+
+behave_when_error = 'P'
+
+TABLES
+
+return = i_ret
+
+partnerchanges = i_part_ch
+
+partneraddresses = i_addr.
+
+CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'.
+
+LOOP AT i_ret INTO w_ret.
+
+WRITE:/ w_ret-message.
+
+ENDLOOP.
