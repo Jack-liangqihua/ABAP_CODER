@@ -1,7 +1,0 @@
-
-
---查询结果赋值给字段
-select count(*) into _var_counter from :var_key;
-IF :_var_counter = 0 THEN
-	--to do
-END IF;	
