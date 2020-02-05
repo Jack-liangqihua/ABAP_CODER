@@ -1,7 +1,7 @@
 # ABAPer
 <center>  <!--ø™ ºæ”÷–∂‘∆Î-->
 
-![SAPÕº∆¨](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/pic/ABAP_1.jpg "SAP")
+![SAPÕº∆¨](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/pic/ABAP_1.gif "SAP")
 
 ∏Ò Ω: ![Õº∆¨Alt](Õº∆¨µÿ÷∑ "Õº∆¨Title")
 
