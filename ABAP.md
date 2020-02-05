@@ -1,8 +1,11 @@
 # ABAPer
 <center>  <!--开始居中对齐-->
 
-![SAP图片](.../pic/ABAP_1.gif "SAP")
+![SAP图片](/pic/ABAP_1.gif "SAP")
 </center> <!--结束居中对齐-->
+
+
+<img src="/pic/ABAP_1.gif" width="50%"></img>
 
 '''
 
