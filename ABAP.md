@@ -1,2 +1,2 @@
 # ABAPer
-<img src="\\pic\\ABAP1.bmp"></img>
+<img src="pic/ABAP1.bmp"></img>
