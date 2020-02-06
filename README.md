@@ -8,7 +8,7 @@ Goals determine what youre going to be.
 
 
 ## 目录结构
-* **[SAP 开发技术文档](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/ABAP.md)** 
+* **[SAP 开发技术文档](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/md/ABAP.md)** 
 	
 
 
