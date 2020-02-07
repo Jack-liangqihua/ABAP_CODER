@@ -11,14 +11,13 @@
 
 ### 表格的画法
 
-|步骤		|	
-|---------	|	 
+第一格表头 | 第二格表头
+--------- | -------------
+内容单元格 第一列第一格 | 内容单元格第二列第一格
+内容单元格 第一列第二格 多加文字 | 内容单元格第二列第二格
 
-|```
-| 步骤			
-| --------- 	 
-| 内容
-```|
 
-|内容 <img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=CENTER /> |
- 
+
+<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=left />
+
+   
