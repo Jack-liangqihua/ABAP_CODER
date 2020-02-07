@@ -24,12 +24,5 @@
 
 ```
 用法：
-![图片](D://Git/ABAP_CODER/pic/ABAP1.bmp "图片1")
-```
-
-<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=center />
-
-```
-用法：
-<img src="……" width="244"  alt="SAP图片" align=left />
+![图片](https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp "图片1")
 ```
