@@ -18,6 +18,6 @@
 
 
 
-<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244" height="314" alt="keep learn微信" align=left />
+<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=center />
 
    
