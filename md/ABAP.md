@@ -2,7 +2,7 @@
 <script src="D:\\Git\\ABAP_CODER\\ext\\mermaid.full.min.js"></script>
 -->
 
-<script src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/ext/mermaid.full.min.js"></script>
+<script src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/js/mermaid.full.min.js"></script>
 
 # ABAP 
 
