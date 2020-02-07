@@ -18,6 +18,6 @@
 
 
 
-<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=center />
+<img src="https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp" width="244"  alt="SAP图片" align=left />
 
    
