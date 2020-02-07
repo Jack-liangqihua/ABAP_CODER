@@ -19,9 +19,9 @@
 
 ### 图片用法
 
-![图片](D://Git/ABAP_CODER/pic/ABAP1.bmp "图片1")
+![图片](https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp "图片1")
 
-
+<!--  ![图片](D://Git/ABAP_CODER/pic/ABAP1.gif "图片1")  -->
 ```
 用法：
 ![图片](https://raw.githubusercontent.com/Jack-liangqihua/ABAP_CODER/master/pic/ABAP1.bmp "图片1")
