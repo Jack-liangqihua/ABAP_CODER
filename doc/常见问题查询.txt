@@ -1,0 +1,583 @@
+1.A:在公司代码分配折旧表时报错? 
+   在公司代码分配折旧表时报错，提示是“3000 的公司代码分录不完全－参见长文本” 
+希望各位大侠帮我看看。
+3000 的公司代码分录不完全－参见长文本
+ R: a.你把零进项税的代码分配给这个公司代码就可以了 .没有指定非税代码,OBCL 
+     b.据此可能company code 设置有问题,检查一下OBY6 
+2.a,维护客户科目组:财政供应链管理->现金和流转情况管理->现金管理->主数据->子分类帐科目->客户控制->维护客户科目组 
+b,创建客户帐户编号范围:财务会计->应收帐目和应付帐目->客户帐户->主数据->创建客户主记录的准备->创建客户帐户编号范围
+c,对客户帐户组分配编号范围: 财务会计->应收帐目和应付帐目->客户帐户->主数据->创建客户主记录的准备->对客户帐户组分配编号范围
+3.MMPV 物料数据估算期间.开物料帐.
+4.MMRV 允许对前期记帐.
+5.OX19 维护成本控制范围,把公司分配给控制范围.
+6.OMSY 第一次开物料帐可以用OMSY所物料帐开到当前时间,以后就用MMPV开物料帐.
+7.FBN1 会计凭证号范围. VN01 SD凭证号码范围.
+8.定义逻辑系统:SPRO/跨应用组件\预定义OLE业务处理\跨应用业务处理\中心用户管理\中央管理的ALE强制活动\定义逻辑系统.
+ T-CODE:SALE\基本设置\逻辑系统
+9.A:我在创建总帐科目时，总是提示“损益报表科目类型在科目表 LXGJ 中未定义”，怎样做呢？谢谢！
+ R:需要在IMG中先配置Retain Earning科目，OB53。我原来也碰到过这个问题,是要先定义留存收益科目,科目类型可以填X,科目可以填本年利润或利润分配--未分配利润的编号,一般直接保存不了,你要上下滚动几下MOUSE的滚轮使该行变灰就OK了.SPRO/财务会计/总帐会计/总帐科目/主数据/准备/定义留存收益科目.
+10.FSPO 总帐科目/会计科目表数据,DISPLAY,EDIT,NEW
+11.Q:为什么不能库存记账？－－－急! 
+我用MB1C用移动类型521做起初余额时，系统提示我该物料不可能有库存记账，按F1帮助，显示 “该物料不可能有库存记帐”
+R:從信息上看還是該種material type 的某valuation area 的 Quantity update沒有被允許,或許你還是要看看這裡. 
+R:in the configuration of material type , you can configure a material type managed on a quantity basis. 
+12.OMWB 配置自动过帐.spro/物料管理/评估和科目设置/科目确定/无向导的科目确定/配置自动过帐
+13.维护类别类别: spro/sap netweaver/base/应用程序链接启动(ALE)/定模和实施业务处理/主数据分配/使用对象类别分配/维护类别类型 OR CL01 维护类别.
+14.配置总帐科目&公司代码 FS00,更改统驭科目的科目类型"必选".SPRO/财务会计/总帐会计/总帐科目/主数据/准备/定义科目组/选择总帐科目组/科目控制/设置可选输入项.
+15.控制标识不存在:spro/控制/一般控制/组织结构/维护成本控制范围/基本数据/激活组件&控制标识
+16.估价范围 7801 还没有生产式的物料帐簿?R:我按照提示去运行CKMSTART
+17.A:帐户1304006对于业务/事件代码BSX,可直接记帐..
+R:FS00,(创建/银行/利息)/公司代码的凭证创建控制/只能自动记帐打上勾.
+18.A:自定义货物移动类型的屏幕格式
+   R:SPRO/物料管理/库存管理和实际库存/收货/定义屏幕格式/选择移动类型
+19.A: 工厂日历丢失或错误在工厂日历中
+   R: OPDD 维护工厂日历,分配工厂日历!
+20.A:删除SAP*,可以用SQLPLUS 连接到数据库案例:
+   R: _delete from sapsr3.usr01 where bname="sap*" and mandt="000";
+commit;
+21.A:VK11 物料定价 没有维护存取顺序.
+ R:SPRO/销售和分销/基本功能/定价/定价控制/定义条件表OR 定义条件类型 OR 定义存取顺序 
+     定义存取顺序要点:定义字段,先选择存取顺序,双击字段可以确定存取字段.
+22. A:没有用于售达方的客户主记录存在
+   R:维护客户主数据据的/销售/定价/统计/价格组和客户定价过程 
+23. R:1、我模仿OR订单，复制了个订单类型、发货类型、开票类型，又定义了自己的定价过程ZHF009，定价条件类型是K007， MWST，ZHUL（我自己定义的条件类型），在前台VA01创建订单时，订单不完整，提示“缺少净价”，我也没在定价过程里定义这个条件类型，为什么在做订单时还不出现？
+   A: 你的定价过程缺少了VPRS或者是没有通过项目类别定义定价，要激活才可以带出来净价的，就是成本价啦！
+24.R:客户000没有对功能 ZE(销售员)定义.
+   A:SPRO/SD/主数据/业务合作伙伴/客户/客户层次/为层次类别设置合作伙伴确定/设置客户主数据的合作伙伴确定/帐户组-功能分配/新建一个ZE(销售员)把功能分配给帐户组->ZSE(*销售员内部)即可.
+25.R:销售凭证项目装运中/装运点&接收点不能带到装运点对应工厂.
+   A:SPRO/后勤执行/装运/基本发运功能/装运点和收货点确认/选择”通过销售单据类型定义发运条件”.
+26.R:不小心删除了工厂,发现不能确定科目帐户.”
+27.A: 我在做SD出具发票时遇到的问题 我在SD中做出具发票保存时，系统提示“凭证 90000000 保存（帐户确定出错）”，然后我在收入科目分析中发现系统提示“在**确定类型KOFI没有找到总账科目”。请问我应该在哪里为**KOFI指定总账账目？谢谢！
+ Q: 在“科目确定过程”中没有找到条件记录，需要在5个条件表中至少维护一个条件记录。用VKOA！需要向FI人员询问。只需在VKOA中维护一般这一行中的KOFI数据就行了。把你的销售组织＋渠道＋产品组 复制一套销售科目确定，可以复制0001的，让后将科目维护成自己公司的对应科目。
+28.A: 现在问SD一个简单的问题。为什么我在为发票确认到财务时，系统说“客户CM0001 没有在公司代码 6301 中定义”但是我在新建客户CM0001时，并没有找到为其指定公司代码呢？
+   Q:对，公司代码的视图数据没建，XD01试试看. 使用FD01创建FI View的客户数据即可。创建客户资料一般分三大块，基本数据、公司数据、销售数据。
+29.Client Copy:
+ CLIENT COPY使用事物代码SCCL，用SCC3查看日志。具体操作如下： 
+6.1.1  创建逻辑系统 
+1 运行事物代码SALE 
+2 选择“应用程序连接”—“发送和接收系统”—“逻辑系统”—“定义逻辑系统”，然后单击 
+运行按钮 
+3 对“跨集团更改”的提示做确认 
+4 在弹出的逻辑系统窗口点击“新条目” 
+5 在弹出的窗口中输入逻辑系统的名字及描述。逻辑系统的命名规范为 
+<SID>CLNT<CLIENTNUMBER>，如TSTCLNT500 
+6 将创建的逻辑系统记入一个REQUEST，然后保存，逻辑系统定义完成。 
+6.1.2 创建CLIENT 
+1 登陆系统，运行事物代码SCC4。 
+2 在弹出的窗口中点击改写按钮。 
+3 确认系统提示—“更改是跨CLIENT的”。 
+4 点击新条目 
+5 输入创建的新CLIENT的设置： 
+集团：3位数字，由002-999任选，066保留 
+逻辑系统：点右侧下拉按钮，找到上面创建的逻辑系统，如TSTCLNT500 
+6 标准货币：选择人民币 
+7 集团角色：根据实际情况选取，如生产或测试 
+由于是新CLIENT，暂时将更改并传输集团对象标记为自动记录修改；与集团无关的对象修改设置 
+为允许对资源库和跨集团定制的更改。 
+8 保存确认 
+6.1.3 LOCALE CLIENT COPY 
+1登陆新创建的CLIENT，默认用户名、密码为SAP*/PASS。 
+2 运行事物代码SCCL 
+3 选择参数文件：参数文件的说明见本章开始部分，根据需要选取 
+4 选择源集团 
+5 选择要拷贝的用户主数据源集团，一般与2的选择相同 
+6 点击后台作业计划，定义集团拷贝的开始时间。 
+7选择调度作业 
+8 检查弹出窗口的内容，确认后继续 
+9 如果立即开始运行LOCALE CLIENT COPY，选择立刻，否则定义开始时间。到这个定义时间后， 
+系统将在后台自动运行集团拷贝。注意：集团拷贝最好选择没有业务应用的时间进行。 
+10 定义集团拷贝日志输出的打印机，一般选择虚拟打印机 
+11 系统提示集团拷贝将在预定时间开始，用SCC3可以查看集团拷贝日志。
+ 在SAP服务器安装时，默认设置了三个client，分别是000，001和066。这些client是SAP的标准client，它们包含了client的一些初始数据。client 000是SAP的一个参考client，里面有所有的SAP表和一些可修改的示例记录。它包含以下的设置： 
+每上表都有一些默认值，这些表是与组织无关的。 
+示例的组织单元。 
+没有应用数据，包括主数据和运作数据，不能使用该client于实际的生产过程。 
+有一套定置的配置。 
+在开始配置系统时，请以client 000为源拷贝一个新的client。在没有应用数据的情况下，一个client需占用150M--200M的数据库空间。我们以000这个client为模板，拷贝生成一个新的client。具体操作是： 
+首先，用scc4事务码创建一个client。配置client的参数，注意保护级别要选级别0，没有限制。配置好后存盘退出。 
+注销，以“sap*”为用户名，“pass”为密码登录新创建的client。运行sccl进地本地client copy。配置client copy参数，Selected profile栏选“SAP_ALL”Source client和Source client user_ masters都选000。 
+在client copy前，最好先进行测试运行。把Test run选项勾上，再按Schedule as background job设置后台工作计划。也就是把工作提交到后台运行。一般设置为立即运行。用scc3事务码可查看后台工作的进度。如果正常完成，没有出错，我们就可重复前面的动作，并取消Test run选项正式运行。 
+成功拷贝后就可用000 client的用户名和密码登录新的client了。为什么是用client 000的用户名和密码呢？这是因为我们把client 000中除文档外的所有数据都拷贝过来了，包括用户数据。记住第一时间更改默认用户的密码。作为一个合格的系统管理员，这是必须要牢记的。
+eastviking 2006-11-16 
+导出一个client的用户数据到本地硬盘，再导到另外一个R/3学习系统， 
+使用事务代码：FTWP及FTWA即可SCC8导出数据，再SCC7导入; SCC8倒出CLIENT，文件会在datafile和cofile两个目录下分别存放控制文件和数据文件，把它拷贝到目标目录下，加入buffer，后可用STMS进行IMPORT，用SCC3监视进程，完成后，用SCC7做POST IMPORT。即可, 但是前提是两个SERVER的STMS必须建好，并采用虚拟目标系统
+eastviking 2006-11-16 
+SAP CLIENT拷贝详细说明相关的事物代码: 
+SCC3 (集团拷贝时查看日志) 
+SCC4 (配置全部集团的目录) 
+SCC5 (集团删除) 
+SCCL (执行集团拷贝) 
+Client(集团)拷贝操作步骤: 
+1.用scc4在集团管理目录里添加一个目的Client(集团). 城市:重庆 货币:RMB 集团属性:测试 集团相关对象:不更改集团无关对象:没有更改 
+2.登陆刚才产生的新集团,用SAP*, pass. 
+3.用sccl执行client copy程序. 比如 选参数文件:sap_all 源集团:300 源集团用户:300 然后选后台计划 最后选调度作业. 
+client copy 的数据选项: 
+1.User_ master data （用户主数据） 你的SAP USER ID 的相关数据 
+2.authorization profiles（授权脚本） 用户权限数据 
+3.Customizing data（定制数据） SPRO的后台配置 
+4.application data （运用数据) 业务数据: 如销售订单，生产单，领料单等等 
+client copy 可选的操作如下: 
+SAP_ALL All client-dependent data 
+SAP_USER User_ master data and authorization profiles 
+SAP_CUST Customizing - application data is deleted 
+SAP_UCUS Customizing and user data - application data is deleted 
+SAP_APPL Customizing data and application data 
+原来Client Copy操作Target 默认就是当前系统。所以必须登入新建的系统才能做。我在000中执行，想往新建完的client中copy，就得到上面的错误了。希望其它新人不要再犯相同的错误了。再一个问题，参数文件 
+1.User_ master data （用户主数据） 你的SAP USER ID 的的相关数据 
+2.authorization profiles（授权脚本） 用户权限数据 
+3.Customizing data（定制数据） SPRO的后台配置 
+4.application data （运用数据） 业务数据: 如销售订单，生产单，领料单等等
+30. Tcode: smw0
+选择Binary data for WebRFC applications
+不用输入信息，执行即可
+Create 一个对象（必须以Z开始的名字，如ZP800）
+点击import，输入图片的路径
+点击transfer
+输入开发类（必须是系统中已经有的Z开头的开发类）
+然后Save
+新建一个change request
+ 
+执行sm30
+维护ssm_cust
+将HIDE_START_IMAGE改为No
+START_IMAGE改为自己创建的对象名ZP800
+Save即可
+ 
+如果是要改GUI右上角的水滴动画则只要用图像编辑软件修改GUI安装目录下的sapalogo.bmp文件即可
+ 
+30．             Q:SAP 物料帐簿货币被更改.
+A:因把成本控制范围6301删除,又新建后没有把公司代码6301分配给成本控制范围.
+31． Q:ABAP运行错误:
+    A:
+a..RZ10, default profile: 
+zcsa/installed_languages = E1 
+zcsa/second_language = E 
+zcsa/system_language = 1 
+instance profile: 
+install/codepage/appl_server = 8400 
+ b.既然系统不让运行RSCPINST设置MDMP，OK，直接修改TCPDB和TCPOD： 
+REPORT  ZBA_MDMP                             . 
+tables:tcpdb,tcp0d. 
+TCPDB-CPTRANSFLD = "1100". 
+TCPDB-CPPOOLCLUS = "1100". 
+_insert TCPDB. 
+TCPDB-CPTRANSFLD = "8400". 
+TCPDB-CPPOOLCLUS = "8400". 
+_insert TCPDB. 
+TCP0D-COUNTRY = "". 
+TCP0D-DBLANGU = "E". 
+_insert tcp0d. 
+commit work. 
+ c. Restart R/3
+ 
+32．             Q: “没有用于售达方6000051的客户主记录存在
+A:后勤-常规/商业伙伴/客户/控制/为客户定义科目组和字段选择.
+33．Q:修改PXA 大小。
+    A： 1。先用rz11 看一下这个参数的大小（单位为KB）。
+2。然后用rz10更改profile。
+        3．abap/buffersize=？
+34．Q:在我保存交货单的时候就会弹出一个信息框,
+"快件文档更新终止从作者"SAP"收到"
+请问下为什么会出现这个信息啊,而且在左下角出现交货单已保存,但是我根据单号去找又发现没有此交货单号,我通过SM13查看错误信息,里面错误正文本如下:
+B2 001: 本地逻辑系统未定义
+A．新建逻辑系统见 29
+35. Q:SAP 收单方无法确定
+   A:配置合作伙伴确定的开票相关。
+36. Q:来自科目组 ZSE 的合伙人不被允许对于合伙人功能 ZE.
+ A: A:SPRO/SD/主数据/业务合作伙伴/客户/客户层次/为层次类别设置合作伙伴确定/设置客户主数据的合作伙伴确定/帐户组-功能分配/新建一个ZE(销售员)把功能分配给帐户组->ZSE(*销售员内部)即可.
+37．Q: 凭证 6119100011 保存（帐户确定错误）.
+A: 如果已经配置27的问题。需要看
+1．Mm02物料的销售数据2的“科目设置组”
+2．Xd02 销售区域视图，开票凭证/会计/帐户分配组。分配客户组。如果没有会计项目，需要在客户帐户组的字段状态下的销售数据，选择出具分票，把科目分配组去掉“隐去”。
+38.Q:送达方6000057未对销售范围 2301 KA 02 定义
+   A:先分配2301 KA 02订单类型.再给送达方定义销售范围
+39．Q: 如何设定SAP系统的最大会话界面数 
+    A:RZ10修改参数文件。通过一下参数控制：
+rdisp/max_alt_modes 允许用户创建的最大session数目。最大为6 
+rdisp/tm_max_no 最大用户数
+40.Q:CLIENT复制时提示源集团是生产性而且是保护性的.
+   A:SPRO/财务会计/财务会计的全局设置/公司代码/将公司代码设置给生产性的.
+41.Q:最近sap刚刚上线，发现几个问题。希望高手能帮忙解答一下 
+1、在开发机上的/oracle/<sid>/saptrace/background目录下，除了正常的一些*.trc文件外，还 有很多core文件，而且非常大，几天产生一个，一下子就把目录给撑满了。但是我在生产机上没有发现这种core文件。这些文件是干嘛的？？？直接删除是否可以？？？ 
+2、在生产机上，/oracle/<sid>/oraarch的目录，产生的应该是数据库的归档文件？？全都是 *.dbf文件，有时1小时要产生好几个，有时几小时产生1个，每个文件104M左右大小，目录的空间为15G，但是很快没几天就满了。只能删除部分、。但是在开发机上没有这么多的*。dbf文件，这 个是否跟系统刚刚上线，数据和请求传输比较多有关？？删除是否可以？？？
+   A:1、core文件是系统内部产生错误时出现的文件。一般情况，CORE文件可以删除，但此时你应该检 查以下你的系统日志，来诊断你的系统中所出现的问题以及问题的原因和严重性 
+2、产生归档文件是正常的，问题是你们没有做归档文件备份吗？一般来说，一个归档文件在两次归档文件备份后会自动删除.生产机的archive文件一定要保留，否则一旦要做系统恢复，会丢数据的。这些文件应该在DB13里做备份的，模式选为copy_save_delete
+42．Q:直接启动 brtools 也失败。提示 Environment variable ORACLE_SID is not set 
+    A: 因启动不了 brtools ，我设置了环境变量 
+ORACLE_SID -> <SID> 
+SAPDATA_HOME -> host 
+可以启动 brtools 了。
+45．Q; 在给物料新建批次时错误“工厂xxxx的批次中未处理物料xxxxxxxx”
+     A:没有启用物料的批次管理功能！
+46. Q: 仓位930 901 WE-ZONE不存在 (检查你的输入)
+     A: 仓位不存在需要用ls01n创建一个相应的仓位就可以了
+ WM上线库存转换的方法及步骤 :
+我们公司去年4到6月上WM的时候,对上线的库存的转换方法及步骤如下:
+1. 数量准备
+1) 冻结帐面(人为规定),盘点
+2) 整理库存清单,将物料,批次,数量,仓位等数据按模板形式整理
+3) 核对盘点库存数量与SAP库存
+ 
+2. 库存转换
+1) MB1C/562 将库存出库清空
+2) 激活库存地点的WM管理
+4) 创建物料主数据仓库管理视图
+5) 创建仓位主数据
+6) MB1C/561 把库存模板数据导回(注意: 包括本位金额)
+7) LT01将物料从998/INIT STOCK仓位调整到目标仓位上
+但以上方法会涉及金额, 容易出错, 怕导入后与导出时不一致, 怎么样才不需要涉及金额呢? 后来我想到了一个方法, 如下:
+1) 设置WM移动类型311(库存转储地点出库)与561(库存余额的初始条目)策略一样, 即指定源仓位998/INIT STOCK给它, 作用是当库存导入后,不需要处理TR
+2) 创建一个空的虚拟库存地点(用作中转库)
+3) MB1B/311或411 把库存从需要转换的库存地点转储到虚拟库来
+4) 激活库存地点的WM管理
+5) 创建物料主数据仓库管理视图
+6) 创建仓位主数据
+7) MB1B/311或411 把库存从虚拟库重新转储回WM转换库存地点来(本步骤不涉及金额)
+8) LT01将物料从998/INIT STOCK仓位调整到目标仓位上
+9) 重新把WM移动类型311设置回来
+不知道我这个方法是否合理可用, 也不知道别的公司是怎么做的, 如果您有做过, 请给我点建议吧.
+47．Q：再设置用户时，菜单(t-code)重复。用户有多个角色，角色功能有重复的地方。 能不能不重复显示相同的菜单？ 
+A：1、sm30 
+2、选择 “表/视图”： “SSM_CUST”，点击“维护” 
+3、点击 “新条目”，添加“CONDENSE_MENU ：YES ” 
+                       “ DELETE_DOUBLE_TCODES：YES ” 
+                       “ SORT_USER_MENU：NO” 
+4、保存即可生效 
+美中不足的是，用户菜单排序不理想。
+48．Q：你仍没有创建COAR 6301的成本中心标准层次结构。
+A：IMG-控制－成本中心会计－主数据－成本中心－定义标准层次 
+49．Q：定义过程中的帐码分配的定义在哪里定义？
+A：SPRO/销售和分销/科目分配和成本/定义并分配科目代码。 
+50.    Q:定义过程中的计算类的分配里的公式在哪里定义？
+A：SPRO/销售和分销/系统修正\例程\定义定价公式 or VOFM
+51．Q：The URL http://<ServerName>):8000/sap/bc/bsp/sap/tutorial_1/default.htm was not called due to an error.
+Note
+* The following error text was processed in the system ECC : An exception that could not be caught occurred.
+* The error occurred on the application server diamond_ECC_00 and in the work process 0 .
+* The termination type was: RABAX_STATE
+* The ABAP call stack was:
+Form: ON_CHECK_BSP of program CL_BSP_RUNTIME================CP
+Form: ON_REQUEST of program CL_BSP_RUNTIME================CP
+Form: IF_HTTP_EXTENSION~HANDLE_REQUEST of program CL_HTTP_EXT_BSP===============CP
+Form: EXECUTE_REQUEST of program CL_HTTP_SERVER================CP
+Function: HTTP_DISPATCH_REQUEST of program SAPLHTTP_RUNTIME
+Module: %_HTTP_START of program SAPMHTTP
+What can I do?
+* If the termination type was RABAX_STATE, then you can find more information on the cause of the termination in the system ECC in transaction ST22.
+* If the termination type was ABORT_MESSAGE_STATE, then you can find more information on the cause of the termination on the application server diamond_ECC_00 in transaction SM21.
+* If the termination type was ERROR_MESSAGE_STATE, then you can search for more information in the trace file for the work process 0 in transaction ST11 on the application server diamond_ECC_00 . In some situations, you may also need to analyze the trace files of other work processes.
+* If you do not yet have a user ID, contact your system administrator.
+A: 1.ST22->
+   An exception occurred. This exception is dealt with in more detail below
+. The exception, which is assinged to the class "CX_BSP_HOST_NOT_QUALIFIED"
+ 2.RZ11 icm/host_name_full   SAP没有完全合格域名。
+   Add record to lee_DVEBNGS00_gdsapsvr:icm\host_name_full=gdsapsvr.domain
+ 3.OK!
+52.Q： SAP-Basis System: Operating system call recv failed (error no. 10054) 
+   A：1。Set the gw/gw_disconnect parameter to 0
+Explain:sap note 559199 
+Summary
+Symptom 
+Call disconnections are recorded in the syslog or dev_rd.In the syslog these appear as follows.The entries are written by the gateway reader:
+19:00:24 nefssp24_PRD_00 RD DDIC
+#Q0I Operating system call recv failed (error no. 10054)
+19:00:24 nefssp24_PRD_00 RD DDIC
+#S23 Connection to CPI-C client 218 was closed
+19:00:24 nefssp24_PRD_00 RD DDIC
+#S74 > Partner LU name:
+19:00:24 nefssp24_PRD_00 RD DDIC
+#S0R > Host: nefssp22
+19:00:24 nefssp24_PRD_00 RD DDIC
+#S0I > Partner TP Name: sapgw00
+19:00:24 nefssp24_PRD_00 BTC 21 000 DDIC
+#R49 Communication error, CPIC return code 020,
+#SAP return code 223
+#R5A > Conversation ID: 42024415
+Other terms 
+Gateway 223 Q01 setup connection
+Reason and Prerequisites 
+Using parameter gw/gw_disconnect, a gateway closes the TCP/IP connection between two gateways if this is not used for a specified period.The error occurs if the client side wants to restart an RFC connection but the server side deletes the TCP/IP connection.
+Warning:
+The error occurs extremely rarely - you can almost always retrace the above error message back to the errors described in note 516027.
+Solution 
+Temporary workaround:Set the gw/gw_disconnect parameter to 0. Connections are no longer broken, so terminations are no longer possible.The error is definitely eliminated at the following patch levels:
+620: 380
+610: 610
+46D: 1293
+The function allowing connections between two gateways that have not been used for a long time to be closed is only available as of Kernel Release 46D. Therefore, corrections do not exist for lower kernel releases either.
+53.Q:No PXA storage space available at the moment.
+   A:
+1.    check buffer parameters by RZ20 got to CCMS templates Double Click on Buffers.
+2.    reconfigure the program buffer by adjusting its instance profile parameters.
+3.    define the size of the program buffer with one parameter: abap/buffersize. The size is defined in KB. Better go through help.sap.com
+54.Q：会计借/贷关系？
+   A：
+会计帐户分为几大类 资产类 负债及所有者权益类 收入类 损益类
+资产类 增加部分记借方 减少部分借贷方
+负债类及所有者权类 增加部分借贷方 减少部分记借方 
+比如 银行存款属于资产类** 而短期借款属于负债类**
+用银行存款偿还短期借款，短期借款减少 银行存款减少
+借：短期借款
+__贷：银行存款
+再如 用银行存款购买固定资产
+银行存款和固定资产都是资产类** 固定资产增加 银行存款减少
+借：固定资产
+__贷：银行存款 
+....................................................................................................................反映生产过程的支出类**（费用成本类**）在记账方向上与资产类**相同，收入类**（收入，成果类**）与负债类**相同。
+因为在最终结转成本的时候 收入要结转到本年利润的贷方 费用要接转到本年利润的借方
+例如：销售产品 买家以银行存款支付
+记入收入：
+借：银行存款 
+_贷：主营业务收入
+____应交税金-增值税-销向税额
+结转成本：
+借：主营业务成本
+_贷：库存商品
+期末结转利润：
+借：本年利润 
+_贷：主营业务成本
+借：主营业务收入
+_ 贷：本年利润
+55.Q:FI的几个概念的关系？
+ A：SAP R/3财务基本概念及集成性浅释---总帐等概念
+1，科目表的建立及分配
+在SAP中，科目表的层次较公司代码高，也就是说先创建好科目表，然后可以分配给不同的公司使用。在同一集团范围内，为了使各个集团范围内的公司使用的科目表都能一致，通常是先创建一个虚拟的公司及科目表，然后集团范围内公司都可从其拷贝。科目表中的科目就是在总帐的主数据中分别创建的。这里值得一提是，在SAP中的科目表与传统的手工方式在科目体系中有了很大的不同。传统的帐务体系将会计科目分为1级科目、2级科目、3级科目等。但在SAP已没有这样分法了。除了应收、应付、固定资产等统驭科目外，所有的明细或2、3科目上升为总帐科目（当然在使用之前，应进行有关主数据的设置），如传统的银行存款—工商银行XX支行XX帐号，这只是银行存款的一个子科目，但在SAP中，此时已设置为一个总帐科目了，科目代码是根据企业会计制度中的有关编码扩充至8位编码，如一个企业有许多银行存款，在SAP中就变成了有许多总帐科目。在总帐层次显示时，是分别显示的，但到报表层次时，则根据所有银行科目中的前四位代码汇集成一个科目银行存款进行披露。管理费用也一样，在SAP中有非常多管理费用的总帐科目（如工资、奖金、津贴等）。但在总帐还包含有从其他模块中过入的金额，如统驭科目，统驭如应付/收及固定资产的明细科目，因此在SAP的总帐科目表中，我们看到的就不是目前的五、六十个科目，而是将近五百个的总帐科目。由于应收、应付、固定资产有各自独立的模块，所以有各自的明细帐。但反映在总帐及报表层次时，分别为细分的统驭科目（如应收帐款可根据企业管理的需要分为应收国内的款项与应收国外的款项等）。SAP所有的财务信息都是即时的，当记录一笔总帐分录时，相应的总帐、报表都已生成，当应收明细帐生成时，通过统驭科目就可即时过入总帐与报表。也就是说，在SAP的帐务里，任何时点都会产生新的总帐与新的报表（注意该总帐与报表并不完全体现法人的资产负债损益情况，尚有折旧、预提待摊因素要考虑）。
+2，统驭科目的概念及分类，统驭科目的变更
+统驭科目（reconciliation account）指的就是将明细科目归集起来的意思。前面我们说到，系统总帐科目表中包括统驭科目，该统驭科目是与应收模块、应付模块、固定资产模块有关的，其中长、短期借款运用了应付模块的功能，也成为了统驭科目。在实际业务过程，我们可能会发生统驭科目选用错误，此时就要用到统驭科目的变更功能。如客户A的统驭科目被误选为11310101，并有一笔分录输入，假设为1000元，此时的总帐科目11310101就有1000元余额，事后发现用错统驭科目，为此在此客房的主数据中更改统驭科目假设为113102101（注意这并不会更改已过入11310101的1000元），更改完毕后，至月末（假设本月只有一笔分录及余额为1000元）运行客户重组程序，系统会产生借：11310299（系11310201的调整科目，但非统驭科目）1000贷：11310199（系11310101的调整科目，但非统驭科目）1000，在报表层次上11310101与11310199被安排在一行后余额变为0，11310201与11310299被安排在一行后余额变为1000，这样在报表层次就将由于选错统驭科目而产生的错误纠正了。第二个月初，系统会自动运行相反的调整分录，借：11310199（系11310101的调整科目，但非统驭科目）1000贷：11310299（系11310201的调整科目，但非统驭科目）1000.直到选错统驭科目的金额被支付出去后，才不需运行上述程序。
+3，凭证的输入规则：在SAP中，总帐科目在输入分录是需要遵循传统的记帐方法，“有借必有贷，借贷必相等”。但对于应收、应付的发票输入（即作会计分录）单边则可，如在应付模块作发票输入，填入供应商的号码，日期、金额后，其次填写行项目，此时的行项目的字段中已经默认了借方，用户只需选择适当的总帐科目（如管理费用—XX）、金额、成本中心即可。产生的分录即为借贷皆具的双边分录了。应收模块的发票输入也同样。在应收、应付模块中除了后勤模块的“发票校验程序”及销售模块的“出具发票程序”自动过入应付、应收帐款外，尚有许多处如“过帐”、“清帐”也具有半自动生成会计分录的功能。另外，在SAP中，凭证具有较宽泛的意义，如后勤模块的产生的收货单据，在SAP中也称为凭证，发票也称凭证，因此财务人员在实际操作中应注意区别。
+4，凭证的类别
+传统的会计核算中，将凭证的类别分为收、付、转三类或直接就是一类记帐凭证。SAP对凭证的分类基本上也遵循收、付、转三类的原则，即总帐凭证（类似转帐凭证）SA，与供应商有关的凭证（类似于付款凭证）：KR（应付供应商的凭证）、KG（供应商转来的红字发票，SAP称为贷记凭证）、KZ（付款给供应商的凭证），与客户有关的凭证（类似于收款凭证）：DR（开具发票给顾客的凭证）、DG（开具红字发票给顾客的凭证）、DZ（向顾客收款的凭证），与固定资产交易有关的凭证AA等。
+5，记帐码
+在手工的会计核算过程中，我们通过用记帐符号“借”与“贷”来描述资产、负债的增、减。但在SAP中，却变得有些复杂了，比如，对于总帐科目的凭证，用符号40来表示总帐的借方，用50来表示总帐的贷方，分录例示如下：40：10010101（现金）50：50150101（营业外收入）；对于与供应商发票有关的凭证输入，主要与应付帐款有关的借贷方就比较复杂了，如贷方用31、32、33、34、35、36、37、38、39，借方用21、22、23、24、25、26、27、28、29，如供应商发票输入分录为：40：50100101（营业费用-电费）31：10100037（表示通过主数据创建的供应商编号）。对于与应收帐款有关的，其应收帐款的借贷方所用的记帐码：用01、02、03、04、05、06、07、08、09表示借方，用11、12、13、14、15、16、17、18、19表示贷方，如输入一笔与客户发票有关的分录：01：客户有关的号码50：其他业务收入。与固定资产有关的业务，用70表示借方，用75表示贷方，假设通过应付模块采购固定资产，70：固定资产号码31：10100037.与存货有关的业务，用89表示借方，用99表示贷方，如89：存货贷：50：GR/IR，退货时，40：GR/IR 99：存货（与存货有关的会计业务，大部分是系统自动产生的，因此少了一道麻烦！）。
+记帐码在SAP中实际上起到如下的作用：在行项目中决定可输入的科目的类别；行项目是以借方或贷输入；决定其他字段的状态。
+6，凭证号码的产生
+在SAP中，凭证号码可以由系统产生也可由手工产生，但系统产生的凭证号是连续的，手工产生的号码难免会产生跳号等失误，因此对系统设置时采用的凭证号码是由系统自动产生的。同时，对不同类别的凭证，系统对其产生的号码的范围不尽一致，如输入供应商发票产生的凭证号在1900000000-1999999999之间，付款给供应商的的凭证产生的凭证号在1500000000-1599999999，与固定资产有关的凭证产生的凭证号在0100000000-0199999999之间，开具发票给客户产生的凭证号在1600000000-1699999999之间等等！尚有其他号码范围，可参照总帐蓝图中的有关叙述。当然，号码范围是与年度有关的，即开始新一个会计年度时，号码区间又会被重新选用，从而避免号码被用尽的可能。
+7，记帐期间变式，会计年度与特殊期间
+记帐期间变式是较难理解的一个内容。通过手工的做法是，在某一期间内所有交易都必须在同一时点结帐，以便总帐及财务报表的生成。但在系统中，由于每一时点都可以产生一个即时会计报表，因此某些类型的凭证可以在期间结束时予以关帐，而某些却又可以继续开着，即某些类型凭证可在8月份入七月份的帐。当然从严格的角度说，这是不合适的。这就是记帐期间变式。特殊会计期间，在系统中，会计期间基本上分为12个期间，这与正常手工核算无二，但由于在年度的会计期间结束后（此时12月31日会计报表已产生），仍然存在应当调整的事项，如审计时发现有些费用的确认不尽合理，有些交易金额必须重新确认（如某些资产负债表日后事项），这时的调整就在特殊期间进行。SAP的特殊会计期间分为4个，即13-16期间。但有些资产负债表业务却又难以在特殊期间实现，如资产负债后日后发生的上一年度的退货，由于这涉及到集成的业务，所以在SAP较难实现（具体参见后述）。
+8，初级成本要素与次级成本要素
+初级成本要素与次级成本要素。SAP除总帐的及时集成外，它的另一个特点是与控制模块的及时集成。在SAP中所有的总帐中的费用科目都被要求创建成为初级成本要素。这样，当c    输入一个总帐的费用分录时，系统会要求输入一个成本中心，即表示此时系统已将该初级成本要素分配给了某一成本中心。即通过一个分录就将总帐与控制模块的要求同时满足，这就是SAP的无缝集成。当然控制模块中只有该要素的金额，而不是像总帐的记录是通过双边分录来实现的，因此某成本心的费用报表是各个初级成本要素总汇。次级成本要素是指，某一成本中心的费用要素可整理成为次级的费用要素（项目），并将其通过一定的比例分摊给不同的成本中心。控制模块就是通过这两个要素反映了企业内外部间的资金流动情况。在SAP中，初级成本要素就类似于科目表，它可以分配给任何一个成本中心，包括法人间的成本中心，即不同的成本中心可能包括的初级成本要素是一模一样的，但金额却不尽相同。
+9，分配与分摊
+分配与分摊对于成本要素的来说是一个很重要的功能。并且这功能就类似于固定资产折旧一样，一月只能执行一次。分配的功能是与初级成本要素相关的，分摊的功能是与次级成本要素的功能相关的。这两个功能同样都可用到计划（预算）与实际发生额中。如可创建一个循环，将某成本中心（可超过一个以上）的初级成本要素（可超过一个以上），按一定的比例分配给其他成本中心（可超过一个以上），当然也将这循环分为几个段，各段间相应的要求可以不一样，这样每月末执行时，就可以很好地反映初级成本要素的流向情况。同样的，也可创建一个分摊循环，将某成本中心（可超过一个以上）的初级成本要素（可超过一个以上）重新组合成为一个次级成本要素，然后再将其按一定的比例分配给其他成本中心（可超过一个以上），当然也将这循环分为几个段，各段间相应的要求可以不一样，这样每月末执行时，就可以很好地反映次级成本要素的流向情况。分配与分摊的区别在于，分配是将某一成本中心的初级成本要素分给另一成本心，被分配的初级成本要素会与被分配的成本中心的相同的初级成本要素一并反映，而分摊则是将次级成本要素分摊到另一成本中心，与被分摊的成本中心的初级成本要素一同反映，这样有利于区分本成本中心的发生的费用与分摊过来的费用的界限。需要说明的是，同一利润中心下的成本中心的分配或分摊，并不影响该利润中心的利润额，但跨利润中心进行分配或分摊，则影响了不同利润中心的利润额，两种方法产生（分配或分摊的规则相同时）的影响一致。
+55.Q: 在确定科目时出错：表T030K 关键字 APP1 MWS（MWS为销项税）
+   A：需要定义税务科目
+      SPRO/财务会计的全局设置/销售、购置税/过帐/定义税务科目/ 选择销项税（MSW）再分配销项税帐户
+      销项税一样如此！
+55,Q: 定价类型“ZPXX”不存在定价过程A M RM1002中？
+   A：在复制条件类型“ZPXX”时，在主数据中的定价过程是默认的RM1002.因些修改己定价类型ZPXX的定价过程与之对就应有需的。也可不选用默认的。
+56.Q:新建了下条件类型“ZPXX”,在定价过程中带不净价出来。
+   A：因为在存取顺序中的物料空价格设置为43，即价格=空白。
+57．Q：有关成本控制范围6311的控制标志不存在。
+A：
+58. Q:在做公司间调拨交易新建一个分公司向工厂调拨物料时，装运项目带不出来。
+    提示“不能确定物料的发运数据”
+A：需要维护供应商/采购数据/附加菜单中的附加数据。MK02
+B: SPRO/物料管理/采购，一定要保证“定义工厂装运数据里的客户”有效，可尝试做一下订单看看。
+59. Q：总分类帐科目 6311  2316000 不一致
+A：This line item carries the "W" posting line identification.  The_ master record for G/L ac_count "2316000" in company code "6311" must have the "balance only in local currency" indicator if the "W" identifier is set.
+在仅限以本位币记的余额。
+60.Q: sap在简单WM中此作业无效
+A：spro/后勤执行/装运/拣配/简单WM/为仓库编号定义控制参数和范围/取消打开的简单WM
+61.Q: 对仓储类型800不允许永续盘点 
+A：spro/后勤执行/仓库管理/作业/实际盘点/定义每种存储类型的类型有SZ:年度盘点 PZ： 连续盘点
+62.Q:LI04打印库存清单时，提示“不支持该仓储类型缺省值”
+A：spro/后勤执行/仓库管理/作业/实际盘点/定义库存缺省值
+63.Q：对于工厂的自动确定，有一个优先顺序的问题。
+1、客户物料信息记录里面的工厂。
+2、客户主数据装运屏幕的交货工厂。
+3、物料主数据的销售组织数据1里面的交货工厂。
+64.Q：销售订单中的净值与VF04开票中的净价值有什么区别，如果要一样，能否进行修改
+  A：销售订单和发票的净价值（不含税的价格）应该保持一致，这个要取决于条件类型中item category属性的配置，如果配置成从价格主数据取值的话，那么如果物料的价格在生成销售订单之后，开具发票之前发生改变，就会不一致，这样会造成销售额和应收帐款的不一致。需要做必要的调整。
+如果根据各自的需要，想使其不一致，就我所知，有两种途径：
+1。调整价格主数据的值，然后将有效期调至销售订单生成之后，发票生成之前的日期。
+2。在发票凭证中使用条件类型，手动输入数值调整发票的价格，从而使净价值发生改变
+65. Q:. sap 中打印机如何设定？ 
+A:   SPAD建立打印机
+    输入设备类型的名称
+    设备属性选 CNSAPWIN：MS Windows drive via SAPLPD
+    Host printer __DEFAULT
+67.Q: 成本控制范围6311的控制标志不存在。
+ A: spro./控制/一般控制//组织结构/维护成本控制范围/维护成本控制范围/基本数据/激活组件与控制标识
+68.Q:在用vl10g对公司间采购调拨产生交货时出现“错误信息的非预期发货（输出NR751）
+ A:因为没有给交货类型的”NR 内部分配”正确分配一个存在的号码范围段。 
+69.Q: 在用vl10g对公司间采购调拨产生交货单发货过货时产生错误“对于移动类型643和帐户1305021 成本中心（010）的不同字段选择？
+ A:OMJJ,把643字段选择（从201开始），双击“64.3 TF至跨公间”，把“附加科目设置”下的成本中心给“隐掉”
+70.Q: 在用vl10g对公司间采购调拨产生交货单发货过货时产生错误“对于移动类型643和帐户1305021 业务范围（033）的不同字段选择？
+A：OMJJ,把643字段选择（从201开始），双击“64.3 TF至跨公间”，把“附加科目设置”下的业务范围给“隐掉”
+ 查看字段是否有不同的选择。SE38 RM07CUFA “字段比较选择：移动类型－G/L科目”
+71.Q:在对采购调拨单101+收货时出现“请维护容差码VP(公司代码6311)的容差码”。
+   A：OMC0维护一下6311的容差限制。
+78.Q:用vl01n产生免费订单退货的交货时，提示“销售凭证没有包含项目行数据”
+   A：交货凭证类型复制有误，应复制LR(退货交货)
+79.Q:用vl01n产生免费订单退货的交货时，提示“复制合伙人时出错:合伙人角色：SP”
+   A:为交货指定复制控制/数据传输/抬头数据选择了不对，应选1(抬头)，而我选择了201(抬头交货)
+
+
+80. Oracle 8.1.7 sap 46C用<SID>adm登录svrmgrlconnect internal/*本句用来，查询一下，是否有此记录。正常情况下，显示: 1 row(s) _selected. */__select_ * from sapr3.usr02 where bname=’SAP*’ and mandt=’000’;/*删除此记录。防止拼错，最好直接从上一句copy*/__delete from sapr3.usr02 where bname=’SAP*’ and mandt=’000’;commit;
+Oracle 9.2.0 SAP 4.70
+<sid>是实例名,如PRD，C11等sqlplus /nologconnect / as sysdba*本句用来，查询一下，是否有此记录。正常情况下，显示: 1 row(s) _selected. */__select_ * from sap<sid>.usr02 where bname=’SAP*’ and mandt=’000’;/*删除此记录。防止拼错，最好直接从上一句copy*/__delete from sap<sid>.usr02 where bname=’SAP*’ and mandt=’000’;commit;
+DB2 
+<SID> 是数据库名<sid> 对于4.6C　为　r3 对于4.70　为 <sid>数据库名（小写）
+db2 => connect to <SID>db2 => __select_ * from sap<sid>.usr02 where bname=’SAP*’ and mandt=’000’1 record(s) _selected.
+db2 => __delete from sap<sid>.usr02 where bname=’SAP*’ and mandt=’000’DB20000I The SQL command completed successfully.db2 => commitDB20000I The SQL command completed successfully.
+MS SQL 2000
+打开MS SQL Enterprise Manager, 从菜单[工具]中，选查询分析器<sid> 46C 是r3 或是　空(没有的),大伙可以自己测试一下。470是系统名
+__select_ * from <sid>.usr02 where BNAME=’SAP*’ and MANDT=’000’;__delete from <sid>.usr02 where BNAME=’SAP*’ and MANDT=’000’;commit;
+重新用sap* 口令pass登录就OK了。
+ 
+81.Q: 定价/EURO: 注意: EURO 定制未维护
+   A： EWCF
+Using EWCF (Confirm Euro currency Customizing)
+ 
+ 
+82．配置中英文输入。 
+83．Q: 在va01保存订单时，提示“Runtime error "MESSAGE_TYPE_X" occurred”
+       Short text of error message:
+Maintain current CRM release (table CRMPAROLTP)
+Technical information about the message:
+ Diagnosis
+     When transferring R/3 sales orders to CRM, various transfer errors
+     occur, or when transferring from CRM to R/3 there are no incorrect
+     status updates in CRM or only one. The reason for this is that an
+     incorrect entry for the CRM release is maintained in the R/3 table
+     CRMPAROLTP. 
+保存订单就出错
+A: 用sm30
+复制一个,然后创建值为
+Reason and Prerequisites 
+In the CRMPAROLTP table, the current CRM release was not maintained in the OLTP R/3 system.
+Solution 
+You can maintain the CRMPAROLTP table in Transaction SM30 in the R/3 OLTP Backend System:
+Parameter Name   (PARNAME) "CRM_RELEASE"
+Param. Value    (PARVAL1) "30A"              for a 3.0A Release
+84:维护工厂日历和假期 OY05
+85:维护税码FTXP
+86:Q:输入一有效的交货工厂
+消息号 V1755
+Diagnosis
+The customer for the delivering plant is the same as the sold-to party（售达方）.
+System response
+The system cannot determine a valid delivering plant.
+Procedure
+Check if a delivering plant has been entered in the customer_ master, material_ master, or in the customer-info record, with identical
+customer and sold-to party.
+ A:因为这个客户属于工厂的装运数据“物料管理/采购/采购订单/设置库存调拨订单/定义工厂的装运数据里把客户分配了给工厂”。
+87，Q：如何查找事务代码所在程序的用户出口 
+如何查找事务代码所在程序的用户出口（user-exit）：
+A：
+1。 执行tcode --> system --> status， 找出程序名称。
+2。SE80；输入第一步中找到的程序名称。用菜单：GOTO --> Attributes， 找出Package 名称。(注:也可以用SE93,查这个程式所在的Package)
+3。SE80 --> Repository Information System --> Enhancements --> Customer Exits --> Enhancements -->将第二步中找到的Package 名称输入，执行， 就可以找到tcode的所有用户出口。
+用代码实现：
+REPORT z_search_exit.
+TABLES : tstc, tadir, modsapt, modact, trdir, tfdir, enlfdir.
+TABLES : tstct.
+DATA : jtab LIKE tadir OCCURS 0 WITH HEADER LINE.
+DATA : field1(30).
+DATA : v_devclass LIKE tadir-devclass.
+PARAMETERS : p_tcode LIKE tstc-tcode OBLIGATORY.
+ 
+_select SINGLE_ * FROM tstc WHERE tcode EQ p_tcode.
+IF sy-subrc EQ 0.
+ _select SINGLE_ * FROM tadir WHERE pgmid = "R3TR"
+                   AND object = "PROG"
+                   AND obj_name = tstc-pgmna.
+ MOVE : tadir-devclass TO v_devclass.
+ IF sy-subrc NE 0.
+    _select SINGLE_ * FROM trdir WHERE name = tstc-pgmna.
+    IF trdir-subc EQ "F".
+      _select SINGLE_ * FROM tfdir WHERE pname = tstc-pgmna.
+      _select SINGLE_ * FROM enlfdir WHERE funcname =
+      tfdir-funcname.
+      _select SINGLE_ * FROM tadir WHERE pgmid = "R3TR"
+                         AND object = "FUGR"
+                         AND obj_name EQ enlfdir-area.
+ 
+      MOVE : tadir-devclass TO v_devclass.
+    ENDIF.
+ ENDIF.
+ _select_ * FROM tadir INTO TABLE jtab
+                WHERE pgmid = "R3TR"
+                  AND object = "SMOD"
+                  AND devclass = v_devclass.
+ _select SINGLE_ * FROM tstct WHERE sprsl EQ sy-langu AND
+                                   tcode EQ p_tcode.
+ FORMAT COLOR COL_POSITIVE INTENSIFIED OFF.
+ WRITE:/(19) "Transaction Code - ",
+       20(20) p_tcode,
+       45(50) tstct-ttext.
+ SKIP.
+ IF NOT jtab[] IS INITIAL.
+    WRITE:/(95) sy-uline.
+    FORMAT COLOR COL_HEADING INTENSIFIED ON.
+    WRITE:/1 sy-vline,
+           2 "Exit Name",
+          21 sy-vline ,
+          22 "Description",
+          95 sy-vline.
+    WRITE:/(95) sy-uline.
+    LOOP AT jtab.
+      _select SINGLE_ * FROM modsapt
+             WHERE sprsl = sy-langu AND
+                    name = jtab-obj_name.
+      FORMAT COLOR COL_NORMAL INTENSIFIED OFF.
+      WRITE:/1 sy-vline,
+             2 jtab-obj_name HOTSPOT ON,
+            21 sy-vline ,
+            22 modsapt-modtext,
+            95 sy-vline.
+    ENDLOOP.
+    WRITE:/(95) sy-uline.
+    DESCRIBE TABLE jtab.
+    SKIP.
+    FORMAT COLOR COL_TOTAL INTENSIFIED ON.
+    WRITE:/ "No of Exits:" , sy-tfill.
+ ELSE.
+    FORMAT COLOR COL_NEGATIVE INTENSIFIED ON.
+    WRITE:/(95) "No User Exit exists".
+ ENDIF.
+ELSE.
+ FORMAT COLOR COL_NEGATIVE INTENSIFIED ON.
+ WRITE:/(95) "Transaction Code Does Not Exist".
+ENDIF.
+ 
+AT LINE-SELECTION.
+ GET CURSOR FIELD field1.
+ CHECK field1(4) EQ "JTAB".
+ SET PARAMETER ID "MON" FIELD sy-lisel+1(10).
+ CALL TRANSACTION "SMOD" AND SKIP FIRST   SCREEN.
+ 
+88.Q:没有创建单位 ***（在语言中）
+   A: 用中文登陆系统，SPRO-〉IMG--〉SAP Netweaver-〉(General Settings)一般设置-〉检查计量单位，然后选ISO码，选你要维护的单位，点菜单‘转到’-〉翻译，就可以维护中文下的单位了。
+ 同时登录英文和中文系统维护一遍也行
+89.Q:交易码 VST F1 会计科目表 APP1 没有在表 T030K 中定义
+消息号 F5118
+Diagnosis
+No tax ac_count has been defined for this tax code for the specified ac_count key in the_ chart of accounts.
+Procedure
+Maintain the accounts to which a tax posting is to be made using the tax code entered. You find this within "Financial Accounting" under "Financial accounting global settings", "Tax on sales/purchases" and "Posting" if you _select the corresponding transaction key.
+Proceed
+A: T030K 确定税务科目表，FS10n 总帐科目余额显示，ob07货币兑换汇率类型,ob08 货币汇率设置汇率转换
+进项税 VST 对应的税务代码F1没有维护进项税科目 J1 2210282
+财务会计—财务会计全局设置—销项/购置税—记帐—定义税务科目 TCD:OB40
+不同事物下的税务科目设置 
+MWS(销项税):21710705应交税金-增值税-销项税 
+VST(进项税):21710704应交税金-增值税-进项税 
+90: Q：我在做采购申请单的时候，出现了如图的错误提示，消息显示：物料×××的强制帐户设置（输入帐户设置类别）。 
+A： 后勤常规－物料主数据－基本设置－物料类型－定义物料类型的属性，“原材料”的属性数量值和价格值更新勾选上就ok了因为该物料所属的物料类型没有数量、价值更新，采购申请无法确定评估类，也就无法确定会计科目；
+91:Q: 但我手工下采购订单的时候,会出现黄色警告信息"主记录中未定义供应商 1234 的角色 VN"
+回车保存后是不影响下单的.
+   A: -code XK03 填写Vendor/Purch. organization，勾选复选框"Partner functions"
+进去查看有没有一条记录"VN", "Vendor", "1234"
+如果没有，按“修改”图标，添加一条.
+92：Q：sap 货币代码不允许ALE通讯
+    A：IMG->一般设置->货币->检查货币代码(将RMB设为主要的,将CNY设为非主要的。否则在输入发票时会提示货币ALE不允许)...
+93: Q:在用MIGO对采购订单101 GR收货时，提示：不可能为app1 EIN____3000确认科目
+已经OMWB配置自动过帐并对对应了相应自动记帐科目。
+A：采购科目有专门的配置，spro/物料管理/评估和科目设置/无向导的科目确定/采购科目管理，取消激活公司代码中的采购科目
+94: Q: “co-凭证编号分配对于成本控制范围中的商业事务coin无效”,在mb1a- 917成本中心发货时提示,co的号码范围没有分配
+A: KANK 维护成本控制凭证号码范围维护！
+95:Q：为 2008.05.23 创建科目 6240060 作为控制范围 6301 中成本要素
+   A：KA02 为费用科目新建成本要素
+96：t-code S_BCE_68001439 查看密码修改记录 (勾选“Password changes”) 找出修改密码的用户名及修改时间。PS：从那些修改密码的时间可以看出是否周期性修改的。
+t-code STAD 用上面找出的用户名及时间作为筛选条件，查看系统记录，在详细记录里可以看到计算机名。
+ SAP批量锁定用户T-CODE：EWZ5 选择需要锁定的用户
