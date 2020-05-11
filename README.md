@@ -6,17 +6,7 @@ Goals determine what youre going to be.
 目标，实践。
 
 
-
-## 目录结构
-* **[SAP 文档模板](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/md/ABAP.md)**
-
-* **[SAP 科目表](https://github.com/Jack-liangqihua/ABAP_CODER/blob/master/md/ABAP001.md)**
-
-
-
-
-  
-
+ 
 ## 更新代码说明
 
 更新本地信息到远程仓库步骤说明1：
